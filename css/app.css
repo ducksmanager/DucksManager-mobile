@@ -1,5 +1,9 @@
-.list-item-narrative
-{
+.list-item-narrative {
 	color: #666666;
 	font-weight: normal;
+}
+
+label {
+    border: 0 !important;
+    background: transparent !important;
 }

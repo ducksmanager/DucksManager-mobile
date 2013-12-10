@@ -1,5 +1,10 @@
 WhatTheDuck.controller = (function ($, app) {
 
+    var loginBtn = '#login';
+    var signupBtn = '#end_signup';
+
+    var countryListStorageKey = "WhatTheDuck.CountryList";
+
     var countryListSelector = "#country-list-content";
     var noCountryCachedMsg = "<pre><div>No country</div></pre>";
     var countryListPageId = "country-list-page";
@@ -8,25 +13,18 @@ WhatTheDuck.controller = (function ($, app) {
     var publicationListSelector = "#publication-list-content";
     var noPublicationCachedMsg = "<pre><div>No publication</div></pre>";
     var publicationListPageId = "publication-list-page";
-
-    var countryListStorageKey = "WhatTheDuck.CountryList";
-
+    var publicationCountry = null;
 
     function init() {
         app.init(countryListStorageKey);
         $(document)
             .bind("pagechange", onPageChange)
-            .bind("pagebeforechange", onPageBeforeChange);
-    }
-
-    function onPageBeforeChange(event, data) {
-
-        if (typeof data.toPage === "string") {
-            var url = $.mobile.path.parseUrl(data.toPage);
-            if ($.mobile.path.isEmbeddedPage(url)) {
-                data.options.queryString = $.mobile.path.parseUrl(url.hash.replace(/^#/, "")).search.replace("?", "");
-            }
-        }
+            .bind("pagebeforechange", onPageBeforeChange)
+            .on('click', loginBtn, function() {
+            	getPage({},function() {
+            		alert('OK');
+            	})
+            });
     }
 
     function onPageChange(event, data) {
@@ -97,25 +95,6 @@ WhatTheDuck.controller = (function ($, app) {
                 currentCountry = countryId;
             }
         }
-    }
-
-    function queryStringToObject(queryString) {
-
-        var queryStringObj = {};
-        var e;
-        var a = /\+/g;  // Replace + symbol with a space
-        var r = /([^&;=]+)=?([^&;]*)/g;
-        var d = function (s) {
-            return decodeURIComponent(s.replace(a, " "));
-        };
-
-        e = r.exec(queryString);
-        while (e) {
-            queryStringObj[d(e[1])] = d(e[2]);
-            e = r.exec(queryString);
-        }
-
-        return queryStringObj;
     }
 
     return {

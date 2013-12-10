@@ -19,7 +19,6 @@ WhatTheDuck.app = (function ($) {
         if (storedCountries !== null) {
             countryList = storedCountries;
         }
-
     }
 
     function createBlankCountry() {
