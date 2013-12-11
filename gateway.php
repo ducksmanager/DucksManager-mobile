@@ -3,7 +3,7 @@
 
     if (isset($_GET['params'])) {
 
-        $parametres = json_decode(_GET['params']);
+        $parametres = json_decode($_GET['params']);
         $parametres_url=array();
         foreach($parametres as $cle=>$valeur) {
             $parametres_url[] = $cle.'='.$valeur;
@@ -20,5 +20,4 @@
         echo curl_exec($ch);
         curl_close($ch);
     }
-}
 ?>
