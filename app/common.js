@@ -9,13 +9,13 @@ function onPageBeforeChange(event, data) {
 }
 
 function getPage(parameters, callback) {
-	$.ajax({
-	    url: '/gateway.php',
-	    type: 'post',
-	    data: { parameters: JSON.stringify(parameters)},
-	    dataType: "json",
-	    success: callback
-	});
+    $.ajax({
+        url: 'gateway.php',
+        type: 'post',
+        data: { parameters: JSON.stringify(parameters)},
+        dataType: "json",
+        success: callback
+    });
 }
 
 function queryStringToObject(queryString) {
