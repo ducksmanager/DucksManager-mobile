@@ -20,4 +20,7 @@
         echo curl_exec($ch);
         curl_close($ch);
     }
+    else {
+    	echo 'Erreur : Aucun paramètre';
+    }
 ?>

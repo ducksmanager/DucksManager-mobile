@@ -6,14 +6,14 @@ WhatTheDuck.app = (function ($) {
 
     function init(storageKey) {
         countryListStorageKey = storageKey,
-        loadNotesFromLocalStorage();
+        loadCountriesFromLocalStorage();
     }
 
     function getCountryList() {
         return countryList;
     }
 
-    function loadNotesFromLocalStorage() {
+    function loadCountriesFromLocalStorage() {
         var storedCountries = $.jStorage.get(countryListStorageKey);
 
         if (storedCountries !== null) {

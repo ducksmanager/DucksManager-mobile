@@ -15,15 +15,20 @@ WhatTheDuck.controller = (function ($, app) {
     var publicationListPageId = "publication-list-page";
     var publicationCountry = null;
 
-    function init() {
+    function init() {		
         app.init(countryListStorageKey);
         $(document)
             .bind("pagechange", onPageChange)
             .bind("pagebeforechange", onPageBeforeChange)
             .on('click', loginBtn, function() {
-            	getPage({},function() {
-            		alert('OK');
-            	})
+            	if (navigator.onLine) {
+	            	getPage({},function() {
+	            		alert('OK');
+	            	});
+            	}
+            	else {
+            		
+            	}
             });
     }
 
