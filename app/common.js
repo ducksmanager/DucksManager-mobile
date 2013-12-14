@@ -1,20 +1,41 @@
+var SERVER_PAGE='WhatTheDuck.php';
+var DUCKSMANAGER_URL='http://www.ducksmanager.net';
+var DUCKSMANAGER_PAGE_WITH_REMOTE_URL='WhatTheDuck_server.php';
+var SERVER_URL;
+
 function onPageBeforeChange(event, data) {
 
-    if (typeof data.toPage === "string") {
+    if (typeof data.toPage === 'string') {
         var url = $.mobile.path.parseUrl(data.toPage);
         if ($.mobile.path.isEmbeddedPage(url)) {
-            data.options.queryString = $.mobile.path.parseUrl(url.hash.replace(/^#/, "")).search.replace("?", "");
+            data.options.queryString = $.mobile.path.parseUrl(url.hash.replace(/^#/, '')).search.replace('?', '');
         }
     }
 }
+    
+function getServerPage() {
+    if (!SERVER_URL) {
+        getPage(
+            DUCKSMANAGER_URL+'/'+DUCKSMANAGER_PAGE_WITH_REMOTE_URL, 
+            function(response) {
+                SERVER_URL = response;
+            }, 
+            {}, 
+            'script'
+        );
+    }
+}
 
-function getPage(parameters, callback) {
+function getPage(url, callback, parameters, dataType) {
     $.ajax({
-        url: '/gateway.php',
+        url: url,
         type: 'post',
-        data: { parameters: JSON.stringify(parameters)},
-        dataType: "json",
-        success: callback
+        data: parameters,
+        dataType: dataType || 'json',
+        success: callback,
+        error: function(response) {
+            alert(response.responseText);
+        }
     });
 }
 
@@ -25,7 +46,7 @@ function queryStringToObject(queryString) {
     var a = /\+/g;  // Replace + symbol with a space
     var r = /([^&;=]+)=?([^&;]*)/g;
     var d = function (s) {
-        return decodeURIComponent(s.replace(a, " "));
+        return decodeURIComponent(s.replace(a, ' '));
     };
 
     e = r.exec(queryString);
