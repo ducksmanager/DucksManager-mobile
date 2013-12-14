@@ -1,43 +1,59 @@
 WhatTheDuck.controller = (function ($, app) {
+    
+    var username;
+    var password;
+    var encryptedPassword;
 
     var loginBtn = '#login';
     var signupBtn = '#end_signup';
 
-    var countryListStorageKey = "WhatTheDuck.CountryList";
+    var countryListStorageKey = 'WhatTheDuck.CountryList';
 
-    var countryListSelector = "#country-list-content";
-    var noCountryCachedMsg = "<pre><div>No country</div></pre>";
-    var countryListPageId = "country-list-page";
+    var countryListSelector = '#country-list-content';
+    var noCountryCachedMsg = '<pre><div>No country</div></pre>';
+    var countryListPageId = 'country-list-page';
     var currentCountry = null;
 
-    var publicationListSelector = "#publication-list-content";
-    var noPublicationCachedMsg = "<pre><div>No publication</div></pre>";
-    var publicationListPageId = "publication-list-page";
+    var publicationListSelector = '#publication-list-content';
+    var noPublicationCachedMsg = '<pre><div>No publication</div></pre>';
+    var publicationListPageId = 'publication-list-page';
     var publicationCountry = null;
 
-    function init() {		
+    function init() {        
         app.init(countryListStorageKey);
         $(document)
-            .bind("pagechange", onPageChange)
-            .bind("pagebeforechange", onPageBeforeChange)
+            .bind('pagechange', onPageChange)
+            .bind('pagebeforechange', onPageBeforeChange)
             .on('click', loginBtn, function() {
-            	if (navigator.onLine) {
-	            	getPage({},function() {
-	            		alert('OK');
-	            	});
-            	}
-            	else {
-            		
-            	}
+                if (navigator.onLine) {
+                    var typedUsername = $('#username').text();
+                    var typedPassword = $('#password').text();
+                    
+                    if (!username 
+                     || !encryptedPassword
+                     || username !== typedUsername) {
+                        if (typedUsername === '' || typedPassword === '') {
+                            app.alert('input_error', 'input_error__empty_credentials');
+                        }
+                    }
+                    else {
+                        getPage({},function() {
+                            alert('OK');
+                        });
+                    }
+                }
+                else {
+                    
+                }
             });
     }
 
     function onPageChange(event, data) {
-        var toPageId = data.toPage.attr("id");
+        var toPageId = data.toPage.attr('id');
 
         var fromPageId = null;
         if (data.options.fromPage) {
-            fromPageId = data.options.fromPage.attr("id");
+            fromPageId = data.options.fromPage.attr('id');
         }
 
         switch (toPageId) {
@@ -70,11 +86,11 @@ WhatTheDuck.controller = (function ($, app) {
             var countryCount = countryList.length;
             var country;
             var publicationPageUrl;
-            var ul = $("<ul id=\"notes-list\" data-role=\"listview\"></ul>").appendTo(view);
+            var ul = $('<ul id=\'notes-list\' data-role=\'listview\'></ul>').appendTo(view);
             for (var i = 0; i < countryCount; i++) {
                 country = countryList[i];
-                publicationPageUrl = "index.html#"+publicationListPageId+"?countryId=" + country.countrycode;
-                $("<li>" + "<a data-role=\"button\" data-icon=\"delete\" data-url=\"" + publicationPageUrl + "\" href=\"" + publicationPageUrl + "\">" + "<div>" + country.countryname + "</div>" + "<div class=\"list-item-narrative\">" + country.countryname + "</div>" + "</a>" + "</li>").appendTo(ul);
+                publicationPageUrl = 'index.html#'+publicationListPageId+'?countryId=' + country.countrycode;
+                $('<li>' + '<a data-role=\'button\' data-icon=\'delete\' data-url=\'' + publicationPageUrl + '\' href=\'' + publicationPageUrl + '\'>' + '<div>' + country.countryname + '</div>' + '<div class=\'list-item-narrative\'>' + country.countryname + '</div>' + '</a>' + '</li>').appendTo(ul);
             }
 
             ul.listview();
@@ -87,7 +103,7 @@ WhatTheDuck.controller = (function ($, app) {
         var view = $(publicationListSelector);
 
         var u = $.mobile.path.parseUrl(data.options.fromPage.context.URL);
-        var re = "^#" + publicationListPageId;
+        var re = '^#' + publicationListPageId;
         if (u.hash.search(re) !== -1) {
 
             var queryStringObj = queryStringToObject(data.options.queryString);
