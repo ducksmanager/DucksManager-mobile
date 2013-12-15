@@ -1,8 +1,4 @@
 WhatTheDuck.controller = (function ($, app) {
-    
-    var username;
-    var password;
-    var encryptedPassword;
 
     var loginBtn = '#login';
     var signupBtn = '#end_signup';
@@ -24,28 +20,7 @@ WhatTheDuck.controller = (function ($, app) {
         $(document)
             .bind('pagechange', onPageChange)
             .bind('pagebeforechange', onPageBeforeChange)
-            .on('click', loginBtn, function() {
-                if (navigator.onLine) {
-                    var typedUsername = $('#username').text();
-                    var typedPassword = $('#password').text();
-                    
-                    if (!username 
-                     || !encryptedPassword
-                     || username !== typedUsername) {
-                        if (typedUsername === '' || typedPassword === '') {
-                            app.alert('input_error', 'input_error__empty_credentials');
-                        }
-                    }
-                    else {
-                        getPage({},function() {
-                            alert('OK');
-                        });
-                    }
-                }
-                else {
-                    
-                }
-            });
+            .on('click', loginBtn, connectAndRetrieveList);
     }
 
     function onPageChange(event, data) {
@@ -97,7 +72,6 @@ WhatTheDuck.controller = (function ($, app) {
         }
     }
 
-
     function renderPublicationList(data) {
 
         var view = $(publicationListSelector);
@@ -121,6 +95,23 @@ WhatTheDuck.controller = (function ($, app) {
     return {
         init: init
     };
+    
+    function connectAndRetrieveList() {
+        var typedUsername = $('#username').val();
+        var typedPassword = $('#password').val();
+        
+        if (!app.username 
+         || !app.encryptedPassword
+         || app.username !== typedUsername) {
+            if (typedUsername === '' || typedPassword === '') {
+                app.alert('input_error', 'input_error__empty_credentials');
+                return;
+            }
+        }
+        retrieveOrFail("", function() {
+            alert('!');
+        })
+    }
 
 
 })(jQuery, WhatTheDuck.app);

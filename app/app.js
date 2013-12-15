@@ -1,5 +1,9 @@
 var WhatTheDuck = WhatTheDuck || {};
 WhatTheDuck.app = (function ($) {
+    
+    var username;
+    var password;
+    var encryptedPassword;
 
     var countryList = [];
     var countryListStorageKey;
@@ -37,7 +41,7 @@ WhatTheDuck.app = (function ($) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     
-    function alert(title, text) {
+    function alert(title, text, directText) {
         var alertPopup = $("<div>").popup({
             theme: "b",
             overlyaTheme: "e",
@@ -46,7 +50,7 @@ WhatTheDuck.app = (function ($) {
         .on("popupafterclose", function () { $(this).remove(); })
         .css({padding: '5px'})
         .append($("<h2>", {'data-i18n': title}))
-        .append($("<p>", {'data-i18n': text}))
+        .append($("<p>", directText? {text: text} : {'data-i18n': text}))
         .i18n()
         .popup('open')
         .trigger("create");
