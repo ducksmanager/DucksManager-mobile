@@ -107,10 +107,13 @@ WhatTheDuck.controller = (function ($, app) {
                 app.alert('input_error', 'input_error__empty_credentials');
                 return;
             }
+            else {
+                app.username = typedUsername;
+                app.encryptedPassword = CryptoJS.SHA1(typedPassword).toString();                
+            }
         }
-        retrieveOrFail("", function() {
-            alert('!');
-        })
+        
+        app.getUserCollection();
     }
 
 

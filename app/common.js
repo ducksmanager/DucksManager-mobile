@@ -35,7 +35,7 @@ function getServerURL(callback) {
 function getPage(url, callback, parameters) {
     $.ajax({
         url: url,
-        type: 'post',
+        type: 'get',
         data: parameters,
         success: callback,
         error: function(response) {
@@ -48,9 +48,6 @@ function retrieveOrFail(urlSuffix, callback) {
     urlSuffix = urlSuffix || {};
     
     if (navigator.onLine) {
-        if (!WhatTheDuck.app.encryptedPassword) {
-            WhatTheDuck.app.encryptedPassword = CryptoJS.SHA1(WhatTheDuck.app.password).toString(CryptoJS.enc.Latin1);
-        }
         getServerURL(function(serverURL) {
             getPage(
                 serverURL+'/'+SERVER_PAGE, 

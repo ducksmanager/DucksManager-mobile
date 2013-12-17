@@ -41,8 +41,12 @@ WhatTheDuck.app = (function ($) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     
+    function getUserCollection(callback) {
+        retrieveOrFail('', callback);
+    }
+    
     function alert(title, text, directText) {
-        var alertPopup = $("<div>").popup({
+        var alertPopup = $("<div>", {id: 'error_popup'}).popup({
             theme: "b",
             overlyaTheme: "e",
             transition: "pop"
@@ -50,7 +54,7 @@ WhatTheDuck.app = (function ($) {
         .on("popupafterclose", function () { $(this).remove(); })
         .css({padding: '5px'})
         .append($("<h2>", {'data-i18n': title}))
-        .append($("<p>", directText? {text: text} : {'data-i18n': text}))
+        .append($("<p>", directText ? {text: text} : {'data-i18n': text}))
         .i18n()
         .popup('open')
         .trigger("create");
@@ -60,6 +64,7 @@ WhatTheDuck.app = (function ($) {
         init: init,
         getCountryList: getCountryList,
         createBlankCountry: createBlankCountry,
+        getUserCollection: getUserCollection,
         alert: alert
     };
 
