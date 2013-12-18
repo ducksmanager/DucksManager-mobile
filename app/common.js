@@ -69,7 +69,7 @@ function retrieveOrFail(urlSuffix, callback) {
                         try{
                             callback(JSON.parse(response));
                         } catch(e){
-                            if (response === i18n.t("internal_error__wrong_security_password")) {
+                            if (response === i18n.t('internal_error__wrong_security_password')) {
                                 WhatTheDuck.app.alert('internal_error', response, true);
                             }
                             else {
