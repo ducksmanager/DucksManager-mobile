@@ -10,13 +10,14 @@
   <script type="text/javascript" src="lib/jstorage/jstorage.js" type="text/javascript"></script>
   <script type="text/javascript" src="lib/jasmine/jasmine.js" type="text/javascript"></script>
   <script type="text/javascript" src="lib/jasmine/jasmine-html.js" type="text/javascript"></script>
+  <script type="text/javascript" src="lib/jasmine/jasmine-junit.js" type="text/javascript"></script>
 
   <!-- Source files -->
   <script src="app/app.js" type="text/javascript"></script>
 
   <!-- Spec files -->
-  <script src="app/specs/AppSpec.js" type="text/javascript"></script>
-  <script src="app/specs/TestHelper.js" type="text/javascript"></script>
+  <script src="app/test/specs/AppSpec.js" type="text/javascript"></script>
+  <script src="app/test/specs/TestHelper.js" type="text/javascript"></script>
 
   <!-- Model files -->
   <script src="app/models/Country.js" type="text/javascript"></script>
@@ -25,6 +26,9 @@
     (function() {
       var jasmineEnv = jasmine.getEnv();
       jasmineEnv.updateInterval = 1000;
+	  
+      jasmineEnv.addReporter(new jasmine.TrivialReporter());
+      jasmineEnv.addReporter(new jasmine.JUnitXmlReporter());
 
       var htmlReporter = new jasmine.HtmlReporter();
 
