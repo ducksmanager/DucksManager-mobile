@@ -44,14 +44,21 @@ function getPage(url, callback, parameters) {
     });
 }
 
+var hasRetrievedOrFailed = true;
 function retrieveOrFail(urlSuffix, callback) {
     urlSuffix = urlSuffix || {};
+    if (!hasRetrievedOrFailed) {
+        WhatTheDuck.app.alert('internal_error', 'Concurrent calls to retrieveOrFail detected', true);
+        return;
+    }
+    hasRetrievedOrFailed = false;
     
     if (navigator.onLine) {
         getServerURL(function(serverURL) {
             getPage(
                 serverURL+'/'+SERVER_PAGE, 
                 function(response) {
+                    hasRetrievedOrFailed = true;
                     response = response.replace(/\\/,'');
                     if (response === '0') {
                         WhatTheDuck.app.alert('input_error','input_error__invalid_credentials');
@@ -62,7 +69,12 @@ function retrieveOrFail(urlSuffix, callback) {
                         try{
                             callback(JSON.parse(response));
                         } catch(e){
-                            WhatTheDuck.app.alert('internal_error', e, true);
+                            if (response === i18n.t("internal_error__wrong_security_password")) {
+                                WhatTheDuck.app.alert('internal_error', response, true);
+                            }
+                            else {
+                                WhatTheDuck.app.alert('internal_error', e, true);
+                            }
                         }
                     }
                 },

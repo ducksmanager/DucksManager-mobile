@@ -35,5 +35,22 @@ describe('Public interface exists', function () {
 
         expect(countryList.length > 0).toBeTruthy();
     });
+});
 
+describe('Authentication works', function() {
+    it('Should throw an error when the security password is not provided', function() {
+        
+        runs(function() {
+            WhatTheDuck.app.getUserCollection();
+        });
+        
+        waitsFor(function() {
+            return hasRetrievedOrFailed;
+        }, "The server should have been answered", 750);
+        
+        runs(function() {
+            expect($('#error_popup').length).toEqual(1);
+            expect($('#error_popup').find('p').text()).toEqual(i18n.t('internal_error__wrong_security_password'));
+        });
+    })
 });
