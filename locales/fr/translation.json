@@ -29,6 +29,7 @@
 	"input_error__issue_already_possessed": "Vous possédez déjà ce numéro",
 	"input_error__select_condition": "Veuillez sélectionner l'état du numéro à ajouter",
 	"internal_error": "Erreur interne",
+	"internal_error__wrong_security_password": "Erreur d'authentification",
 	"internal_error__malformed_list": "La liste des numéros est mal formée",
 	"internal_error__crypting_failed": "L'encryptage de vos identifiants a échoué",
 	"internal_error__credentials_reading_failed": "La lecture de vos identifiants stockés a échoué",
