@@ -38,7 +38,10 @@ describe('Public interface exists', function () {
 });
 
 describe('Authentication works', function() {
-    it('Should throw an error when the security password is not provided', function() {
+    it('Should throw an error when the security password is not provided or wrong', function() {
+        
+        var real_security_password = SECURITY_PASSWORD;
+        SECURITY_PASSWORD='a fake security password';
         
         runs(function() {
             WhatTheDuck.app.getUserCollection();
@@ -48,7 +51,9 @@ describe('Authentication works', function() {
             return hasRetrievedOrFailed;
         }, "The server should have been answered", 750);
         
-        runs(function() {
+        runs(function() {            
+            SECURITY_PASSWORD = real_security_password;
+            
             expect($('#error_popup').length).toEqual(1);
             expect($('#error_popup').find('p').text()).toEqual(i18n.t('internal_error__wrong_security_password'));
         });
