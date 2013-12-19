@@ -40,7 +40,10 @@
 	  fakeNavigator.onLine = true;
 	  navigator = fakeNavigator;
 	  
-	  SECURITY_PASSWORD = queryStringToObject(document.URL).security;
+	  var parameters = queryStringToObject(document.URL);
+	  
+	  SECURITY_PASSWORD = parameters.security;
+	  DEMO_PASSWORD = parameters.demo_password;
 	  
       $.i18n.init({lng: 'fr'}, function() {
           $('[data-i18n]').i18n();

@@ -1,3 +1,6 @@
+var DEMO_USERNAME = 'demo';
+var DEMO_PASSWORD;
+
 describe('Public interface exists', function () {
     
     var notesListStorageKey = 'WhatTheDuck.CountryList';
@@ -38,18 +41,26 @@ describe('Public interface exists', function () {
 });
 
 describe('Authentication works', function() {
+    afterEach(function() {
+        $('#error_popup').remove();
+    });
+    
+    function waitForReturnOrFail() {
+        waitsFor(function() {
+            return hasRetrievedOrFailed;
+        }, "The server should have been answered", 750);
+    }
+    
     it('Should throw an error when the security password is not provided or wrong', function() {
         
         var real_security_password = SECURITY_PASSWORD;
-        SECURITY_PASSWORD='a fake security password';
+        SECURITY_PASSWORD = 'a fake security password';
         
         runs(function() {
             WhatTheDuck.app.getUserCollection();
         });
         
-        waitsFor(function() {
-            return hasRetrievedOrFailed;
-        }, "The server should have been answered", 750);
+        waitForReturnOrFail();
         
         runs(function() {            
             SECURITY_PASSWORD = real_security_password;
@@ -57,5 +68,45 @@ describe('Authentication works', function() {
             expect($('#error_popup').length).toEqual(1);
             expect($('#error_popup').find('p').text()).toEqual(i18n.t('internal_error__wrong_security_password'));
         });
-    })
+    });
+    
+    it('Should refuse invalid credentials', function() {
+       var real_demo_password = DEMO_PASSWORD;
+       DEMO_PASSWORD = 'a fake user password';
+       
+       runs(function() {
+           WhatTheDuck.app.username = DEMO_USERNAME;
+           WhatTheDuck.app.encryptedPassword = CryptoJS.SHA1(DEMO_PASSWORD).toString();  
+           WhatTheDuck.app.getUserCollection();
+       });
+       
+       waitForReturnOrFail();
+       
+       runs(function() {            
+           DEMO_PASSWORD = real_demo_password;
+           
+           expect($('#error_popup').length).toEqual(1);
+           expect($('#error_popup').find('p').text()).toEqual(i18n.t('input_error__invalid_credentials'));
+       });
+    });
+    
+    it('Should return a valid user collection', function() {
+        runs(function() {
+            WhatTheDuck.app.username = DEMO_USERNAME;
+            WhatTheDuck.app.encryptedPassword = CryptoJS.SHA1(DEMO_PASSWORD).toString();
+            WhatTheDuck.app.getUserCollection(function(collection) {
+                expect(collection).toBeDefined();
+                expect(collection['numeros']).toBeDefined();
+                expect(collection['static']).toBeDefined();
+                expect(typeof collection['numeros']).toEqual('object');
+                expect(typeof collection['static']).toEqual('object');
+            });
+        });
+        
+        waitForReturnOrFail();
+        
+        runs(function() {
+            expect($('#error_popup').length).toEqual(0);
+        });
+    });
 });

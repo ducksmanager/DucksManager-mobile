@@ -20,7 +20,9 @@ WhatTheDuck.controller = (function ($, app) {
         $(document)
             .bind('pagechange', onPageChange)
             .bind('pagebeforechange', onPageBeforeChange)
-            .on('click', loginBtn, connectAndRetrieveList);
+            .on('click', loginBtn, function() {
+                connectAndRetrieveList($('#username').val(), $('#password').val());
+            });
     }
 
     function onPageChange(event, data) {
@@ -96,10 +98,7 @@ WhatTheDuck.controller = (function ($, app) {
         init: init
     };
     
-    function connectAndRetrieveList() {
-        var typedUsername = $('#username').val();
-        var typedPassword = $('#password').val();
-        
+    function connectAndRetrieveList(typedUsername, typedPassword) {        
         if (!app.username 
          || !app.encryptedPassword
          || app.username !== typedUsername) {

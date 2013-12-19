@@ -78,7 +78,7 @@ function retrieveOrFail(urlSuffix, callback) {
                         }
                     }
                 },
-                $.extend(urlSuffix, {
+                $.extend({}, urlSuffix, {
                     pseudo_user: WhatTheDuck.app.username,
                     mdp_user:    WhatTheDuck.app.encryptedPassword,
                     mdp:         SECURITY_PASSWORD,
@@ -97,7 +97,7 @@ function queryStringToObject(queryString) {
     var queryStringObj = {};
     var e;
     var a = /\+/g;  // Replace + symbol with a space
-    var r = /\?([^&;=]+)=?([^&;#]*)/g;
+    var r = /(?:\?|&)([^&;=]+)=([^&;#]*)/g;
     var d = function (s) {
         return decodeURIComponent(s.replace(a, ' '));
     };
