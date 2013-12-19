@@ -40,7 +40,7 @@
 	  fakeNavigator.onLine = true;
 	  navigator = fakeNavigator;
 	  
-      $.i18n.init(function() {
+      $.i18n.init({lng: 'fr'}, function() {
           $('[data-i18n]').i18n();
       });
       
