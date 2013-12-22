@@ -10,7 +10,6 @@ if (phantom.args.length === 0) {
 else {
     var args = phantom.args;
     var fs = require("fs"),
-        pages = [],
         page, address, resultsKey, i, l;
 
 
@@ -36,24 +35,9 @@ else {
         resultsKey = "__jr" + Math.ceil(Math.random() * 1000000);
         page.onInitialized = setupPageFn(page, resultsKey);
         page.open(address, processPage(null, page, resultsKey));
-        pages.push(page);
 
         page.onConsoleMessage = logAndWorkAroundDefaultLineBreaking;
     }
-
-    // bail when all pages have been processed
-    setInterval(function(){
-        var exit_code = 0;
-        for (i = 0, l = pages.length; i < l; i++) {
-            page = pages[i];
-            if (page.__exit_code === null) {
-                // wait until later
-                return;
-            }
-            exit_code |= page.__exit_code;
-        }
-        phantom.exit(exit_code);
-    }, 100);
 }
 
 // Thanks to hoisting, these helpers are still available when needed above
@@ -198,6 +182,7 @@ function processPage(status, page, resultsKey) {
                     page.__exit_code = 0;
                     clearInterval(ival);
                 }
+				phantom.exit(page.__exit_code);
             }
         }, 100);
     }
