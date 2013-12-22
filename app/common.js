@@ -4,6 +4,7 @@ var DUCKSMANAGER_PAGE_WITH_REMOTE_URL='WhatTheDuck_server.php';
 var SERVER_URL;
 var APPLICATION_VERSION = '2.0';
 var SECURITY_PASSWORD='';
+var PASSWORD_PLACEHOLDER = '******';
 
 function onPageBeforeChange(event, data) {
 
@@ -68,6 +69,8 @@ function retrieveOrFail(urlSuffix, callback) {
                     else {
                         try{
                             callback(JSON.parse(response));
+                            WhatTheDuck.app.username = '';
+                            WhatTheDuck.app.password = '';
                         } catch(e){
                             if (response === i18n.t('internal_error__wrong_security_password')) {
                                 WhatTheDuck.app.alert('internal_error', response, true);
@@ -109,4 +112,8 @@ function queryStringToObject(queryString) {
     }
 
     return queryStringObj;
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }

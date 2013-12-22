@@ -40,6 +40,21 @@ describe('Public interface exists', function () {
     });
 });
 
+describe('Local storage can be retrieved', function() {
+    it('should store credentials in the localStorage', function() {
+        var testUsername = 'user' + getRandomInt(1, 2000);
+        var testPassword = 'password' + getRandomInt(1, 2000);
+        WhatTheDuck.app.username = testUsername;
+        WhatTheDuck.app.encryptedPassword = testPassword;
+        
+        WhatTheDuck.app.storeCredentials();
+        
+        expect(localStorage.username).toEqual(testUsername);
+        expect(localStorage.encryptedPassword).toEqual(testPassword);
+        
+    });
+});
+
 describe('Authentication works', function() {
     afterEach(function() {
         $('#error_popup').remove();
@@ -101,12 +116,6 @@ describe('Authentication works', function() {
                 expect(typeof collection['numeros']).toEqual('object');
                 expect(typeof collection['static']).toEqual('object');
             });
-        });
-        
-        waitForReturnOrFail();
-        
-        runs(function() {
-            expect($('#error_popup').length).toEqual(0);
         });
     });
 });

@@ -4,6 +4,8 @@ WhatTheDuck.controller = (function ($, app) {
     var signupBtn = '#end_signup';
 
     var countryListStorageKey = 'WhatTheDuck.CountryList';
+    
+    var welcomePageId = 'welcome-page';
 
     var countryListSelector = '#country-list-content';
     var noCountryCachedMsg = '<pre><div>No country</div></pre>';
@@ -34,6 +36,10 @@ WhatTheDuck.controller = (function ($, app) {
         }
 
         switch (toPageId) {
+            case welcomePageId:
+                loadStoredCredentials();
+            break;
+            
             case countryListPageId:
                 renderCountryList();
             break;
@@ -44,6 +50,21 @@ WhatTheDuck.controller = (function ($, app) {
                 }
 
             break;
+        }
+    }
+    
+    function loadStoredCredentials() {
+        if (localStorage.username && localStorage.encryptedPassword) {
+            WhatTheDuck.app.username = localStorage.username;
+            WhatTheDuck.app.encryptedPassword = localStorage.encryptedPassword;
+            $('#username').val(WhatTheDuck.app.username);
+            $('#password')
+                .val(PASSWORD_PLACEHOLDER)
+                .click(function() {
+                   if ($(this).val() === PASSWORD_PLACEHOLDER) {
+                       $(this).val(''); 
+                   }
+                });
         }
     }
 
@@ -112,7 +133,12 @@ WhatTheDuck.controller = (function ($, app) {
             }
         }
         
-        app.getUserCollection();
+        app.getUserCollection(function(collection) {
+            if ($('#checkBoxRememberCredentials').prop('checked')) {
+                app.storeCredentials();
+            }
+            app.buildUserCollection(collection);
+        });
     }
 
 

@@ -36,13 +36,18 @@ WhatTheDuck.app = (function ($) {
 
         return countryModel;
     }
-
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
     
     function getUserCollection(callback) {
         retrieveOrFail('', callback);
+    }
+    
+    function storeCredentials() {
+        localStorage.username = this.username;
+        localStorage.encryptedPassword = this.encryptedPassword;
+    }
+    
+    function buildUserCollection(collection) {
+        
     }
     
     function alert(title, text, directText) {
@@ -65,6 +70,8 @@ WhatTheDuck.app = (function ($) {
         getCountryList: getCountryList,
         createBlankCountry: createBlankCountry,
         getUserCollection: getUserCollection,
+        storeCredentials: storeCredentials,
+        buildUserCollection: buildUserCollection,
         alert: alert
     };
 
