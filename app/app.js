@@ -17,6 +17,10 @@ WhatTheDuck.app = (function ($) {
     function getCountryList() {
         return countryList;
     }
+	
+	function setUser(newUser) {
+		this.user = newUser;
+	}
 
     function loadCountriesFromLocalStorage() {
         var storedCountries = $.jStorage.get(countryListStorageKey);
@@ -43,8 +47,8 @@ WhatTheDuck.app = (function ($) {
     }
     
     function storeCredentials() {
-        localStorage.username = user.username;
-        localStorage.encryptedPassword = user.encryptedPassword;
+        localStorage.username = this.user.username;
+        localStorage.encryptedPassword = this.user.encryptedPassword;
     }
     
     function buildUserCollection(collection) {
@@ -67,6 +71,9 @@ WhatTheDuck.app = (function ($) {
     }
 
     return {
+		user: user,
+		
+		setUser: setUser,
         init: init,
         getCountryList: getCountryList,
         createBlankCountry: createBlankCountry,

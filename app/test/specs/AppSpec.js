@@ -89,6 +89,13 @@ describe('Local storage can be retrieved', function() {
 
 describe('Authentication works', function() {
 
+    beforeEach(function() {
+        WhatTheDuck.app.setUser(new WhatTheDuck.User({
+            username: DEMO_USERNAME,
+            encryptedPassword: CryptoJS.SHA1(DEMO_PASSWORD).toString()
+        }));
+    });
+
     afterEach(function() {
         $('#error_popup').remove();
     });
@@ -118,28 +125,24 @@ describe('Authentication works', function() {
     });
     
     it('Should refuse invalid credentials', function() {
-       var real_demo_password = DEMO_PASSWORD;
-       DEMO_PASSWORD = 'a fake user password';
        
        runs(function() {
-           WhatTheDuck.app.username = DEMO_USERNAME;
-           WhatTheDuck.app.encryptedPassword = CryptoJS.SHA1(DEMO_PASSWORD).toString();  
-           WhatTheDuck.app.getUserCollection();
+			WhatTheDuck.app.setUser({
+				username: DEMO_USERNAME,
+				encryptedPassword: CryptoJS.SHA1('a fake user password').toString()
+			});
+			WhatTheDuck.app.getUserCollection();
        });
        
        waitForReturnOrFail();
        
-       runs(function() {            
-           DEMO_PASSWORD = real_demo_password;
-           
+       runs(function() {
            expect($('#error_popup')).toBeAnErrorPopupWithMessage(i18n.t('input_error__invalid_credentials'));
        });
     });
     
     it('Should return a valid user collection', function() {
         runs(function() {
-            WhatTheDuck.app.username = DEMO_USERNAME;
-            WhatTheDuck.app.encryptedPassword = CryptoJS.SHA1(DEMO_PASSWORD).toString();
             WhatTheDuck.app.getUserCollection(function(collection) {
                 expect(collection).toBeDefined();
                 expect(collection['numeros']).toBeDefined();
