@@ -1,6 +1,30 @@
 var DEMO_USERNAME = 'demo';
 var DEMO_PASSWORD;
 
+
+beforeEach(function() {
+  this.addMatchers({
+		toBeANullErrorPopup: function() {
+			this.message = function() {
+				return 'Expected no error popup but saw one with '+$('#error_popup p').text();
+			};
+
+			return this.actual.length === 0;
+		},
+		
+		toBeAnErrorPopupWithMessage: function(errorText) {
+			this.message = function() {
+				if (this.actual.length === 0) {
+					return 'Expected an error popup with message '+errorText+' but got none';
+				}
+				return 'Expected an error popup with message '+errorText+' but got '+this.actual.find('p').text();
+			};
+
+			return this.actual.length === 1 && this.actual.find('p').text() === errorText;
+		}
+	});
+});
+
 describe('Public interface exists', function () {
     
     var notesListStorageKey = 'WhatTheDuck.CountryList';
@@ -56,6 +80,7 @@ describe('Local storage can be retrieved', function() {
 });
 
 describe('Authentication works', function() {
+
     afterEach(function() {
         $('#error_popup').remove();
     });
@@ -80,8 +105,7 @@ describe('Authentication works', function() {
         runs(function() {            
             SECURITY_PASSWORD = real_security_password;
             
-            expect($('#error_popup').length).toEqual(1);
-            expect($('#error_popup').find('p').text()).toEqual(i18n.t('internal_error__wrong_security_password'));
+            expect($('#error_popup')).toBeAnErrorPopupWithMessage(i18n.t('internal_error__wrong_security_password'));
         });
     });
     
@@ -100,8 +124,7 @@ describe('Authentication works', function() {
        runs(function() {            
            DEMO_PASSWORD = real_demo_password;
            
-           expect($('#error_popup').length).toEqual(1);
-           expect($('#error_popup').find('p').text()).toEqual(i18n.t('input_error__invalid_credentials'));
+           expect($('#error_popup')).toBeAnErrorPopupWithMessage(i18n.t('input_error__invalid_credentials'));
        });
     });
     
@@ -121,7 +144,7 @@ describe('Authentication works', function() {
 		waitForReturnOrFail();
         
         runs(function() {
-            expect($('#error_popup').length).toEqual(0);
+            expect($('#error_popup')).toBeANullErrorPopup();
         });
     });
 });
