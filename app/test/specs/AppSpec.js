@@ -106,24 +106,21 @@ describe('Authentication works', function() {
     });
     
     it('Should return a valid user collection', function() {
-		var retrievedCollection;
-	
         runs(function() {
             WhatTheDuck.app.username = DEMO_USERNAME;
             WhatTheDuck.app.encryptedPassword = CryptoJS.SHA1(DEMO_PASSWORD).toString();
             WhatTheDuck.app.getUserCollection(function(collection) {
-				retrievedCollection = collection;
+                expect(collection).toBeDefined();
+                expect(collection['numeros']).toBeDefined();
+                expect(collection['static']).toBeDefined();
+                expect(typeof collection['numeros']).toEqual('object');
+                expect(typeof collection['static']).toEqual('object');
             });
         });
 		
 		waitForReturnOrFail();
         
         runs(function() {
-			expect(retrievedCollection).toBeDefined();
-			expect(retrievedCollection['numeros']).toBeDefined();
-			expect(retrievedCollection['static']).toBeDefined();
-			expect(typeof retrievedCollection['numeros']).toEqual('object');
-			expect(typeof retrievedCollection['static']).toEqual('object');
             expect($('#error_popup').length).toEqual(0);
         });
     });
