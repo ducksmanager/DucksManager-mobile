@@ -103,7 +103,7 @@ describe('Authentication works', function() {
     function waitForReturnOrFail() {
         waitsFor(function() {
             return hasRetrievedOrFailed;
-        }, "The server should have been answered", 750);
+        }, "The server should have been answered", 1000);
     }
     
     it('Should throw an error when the security password is not provided or wrong', function() {
@@ -157,5 +157,14 @@ describe('Authentication works', function() {
         runs(function() {
             expect($('#error_popup')).toBeANullErrorPopup();
         });
+    });
+});
+
+describe('Collection handling', function() {
+    it('should sort the issues correctly', function() {
+        var list = ['2', 'A', '* 3', '1'];
+        var sortedList = list.sort(WhatTheDuck.Collection.NamesComparator);
+        
+        expect(sortedList).toEqual(['1', '2', '* 3', 'A']);
     });
 });
