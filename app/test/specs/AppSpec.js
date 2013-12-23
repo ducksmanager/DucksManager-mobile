@@ -1,6 +1,12 @@
+/* From WhatTheDuck.js */
+/*global WhatTheDuck, SECURITY_PASSWORD*/
+
+/* From common.js */
+/*global getRandomInt*/
+
+
 var DEMO_USERNAME = 'demo';
 var DEMO_PASSWORD;
-
 
 beforeEach(function() {
   this.addMatchers({
@@ -68,8 +74,10 @@ describe('Local storage can be retrieved', function() {
     it('should store credentials in the localStorage', function() {
         var testUsername = 'user' + getRandomInt(1, 2000);
         var testPassword = 'password' + getRandomInt(1, 2000);
-        WhatTheDuck.app.username = testUsername;
-        WhatTheDuck.app.encryptedPassword = testPassword;
+        WhatTheDuck.app.user = new WhatTheDuck.User({
+            username: testUsername,
+            encryptedPassword: testPassword
+        });
         
         WhatTheDuck.app.storeCredentials();
         

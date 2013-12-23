@@ -1,9 +1,10 @@
+/* From common.js */
+/*global getRandomInt, retrieveOrFail*/
+
 var WhatTheDuck = WhatTheDuck || {};
 WhatTheDuck.app = (function ($) {
     
-    var username;
-    var password;
-    var encryptedPassword;
+    var user;
 
     var countryList = [];
     var countryListStorageKey;
@@ -42,8 +43,8 @@ WhatTheDuck.app = (function ($) {
     }
     
     function storeCredentials() {
-        localStorage.username = this.username;
-        localStorage.encryptedPassword = this.encryptedPassword;
+        localStorage.username = user.username;
+        localStorage.encryptedPassword = user.encryptedPassword;
     }
     
     function buildUserCollection(collection) {
@@ -51,7 +52,7 @@ WhatTheDuck.app = (function ($) {
     }
     
     function alert(title, text, directText) {
-        var alertPopup = $("<div>", {id: 'error_popup'}).popup({
+        $("<div>", {id: 'error_popup'}).popup({
             theme: "b",
             overlyaTheme: "e",
             transition: "pop"

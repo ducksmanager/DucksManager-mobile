@@ -1,3 +1,6 @@
+/* From WhatTheDuck.js */
+/*global WhatTheDuck, SECURITY_PASSWORD, PASSWORD_PLACEHOLDER*/
+
 WhatTheDuck.controller = (function ($, app) {
 
     var loginBtn = '#login';
@@ -55,9 +58,11 @@ WhatTheDuck.controller = (function ($, app) {
     
     function loadStoredCredentials() {
         if (localStorage.username && localStorage.encryptedPassword) {
-            WhatTheDuck.app.username = localStorage.username;
-            WhatTheDuck.app.encryptedPassword = localStorage.encryptedPassword;
-            $('#username').val(WhatTheDuck.app.username);
+            WhatTheDuck.app.user = new WhatTheDuck.User({
+                username: localStorage.username,
+                encryptedPassword: localStorage.encryptedPassword
+            });
+            $('#username').val(WhatTheDuck.app.user.username);
             $('#password')
                 .val(PASSWORD_PLACEHOLDER)
                 .click(function() {
@@ -120,16 +125,17 @@ WhatTheDuck.controller = (function ($, app) {
     };
     
     function connectAndRetrieveList(typedUsername, typedPassword) {        
-        if (!app.username 
-         || !app.encryptedPassword
-         || app.username !== typedUsername) {
+        if (!app.user
+         || app.user.username !== typedUsername) {
             if (typedUsername === '' || typedPassword === '') {
                 app.alert('input_error', 'input_error__empty_credentials');
                 return;
             }
             else {
-                app.username = typedUsername;
-                app.encryptedPassword = CryptoJS.SHA1(typedPassword).toString();                
+                app.user = new WhatTheDuck.User({
+                    username: typedUsername,
+                    encryptedPassword: CryptoJS.SHA1(typedPassword).toString()
+                });
             }
         }
         

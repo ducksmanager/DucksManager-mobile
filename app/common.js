@@ -1,3 +1,9 @@
+/* From WhatTheDuck.js */
+/*global WhatTheDuck*/
+
+/* From i18next.js */
+/*global i18n*/
+
 var SERVER_PAGE='WhatTheDuck.php';
 var DUCKSMANAGER_URL='http://www.ducksmanager.net';
 var DUCKSMANAGER_PAGE_WITH_REMOTE_URL='WhatTheDuck_server.php';
@@ -63,14 +69,12 @@ function retrieveOrFail(urlSuffix, callback) {
                     response = response.replace(/\\/,'');
                     if (response === '0') {
                         WhatTheDuck.app.alert('input_error','input_error__invalid_credentials');
-                        WhatTheDuck.app.username = '';
-                        WhatTheDuck.app.password = '';
+                        WhatTheDuck.app.user.username = '';
                     }
                     else {
                         try{
                             callback(JSON.parse(response));
-                            WhatTheDuck.app.username = '';
-                            WhatTheDuck.app.password = '';
+                            WhatTheDuck.app.user.username = '';
                         } catch(e){
                             if (response === i18n.t('internal_error__wrong_security_password')) {
                                 WhatTheDuck.app.alert('internal_error', response, true);
@@ -82,8 +86,8 @@ function retrieveOrFail(urlSuffix, callback) {
                     }
                 },
                 $.extend({}, urlSuffix, {
-                    pseudo_user: WhatTheDuck.app.username,
-                    mdp_user:    WhatTheDuck.app.encryptedPassword,
+                    pseudo_user: WhatTheDuck.app.user.username,
+                    mdp_user:    WhatTheDuck.app.user.encryptedPassword,
                     mdp:         SECURITY_PASSWORD,
                     version:     APPLICATION_VERSION
                 })
