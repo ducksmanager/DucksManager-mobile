@@ -1,10 +1,15 @@
 /* From common.js */
 /*global getRandomInt, retrieveOrFail*/
 
+/* From coa.js */
+/*global CoaListing*/
+
 var WhatTheDuck = WhatTheDuck || {};
 WhatTheDuck.app = (function ($) {
     
     var user;
+    var userCollection;
+    var coaCollection;
 
     var countryList = [];
     var countryListStorageKey;
@@ -12,6 +17,9 @@ WhatTheDuck.app = (function ($) {
     function init(storageKey) {
         countryListStorageKey = storageKey,
         loadCountriesFromLocalStorage();
+        
+        this.userCollection = new WhatTheDuck.Collection();
+        this.coaCollection = new WhatTheDuck.Collection();
     }
 
     function getCountryList() {
@@ -52,7 +60,19 @@ WhatTheDuck.app = (function ($) {
     }
     
     function buildUserCollection(collection) {
+        var issues = collection.numeros;
+        $.each(issues, function(countryAndPublication, publicationIssues) {
+            $.each(publicationIssues, function() {
+                WhatTheDuck.app.userCollection.addIssueJoinedCountryAndPublication(
+                    countryAndPublication, 
+                    new WhatTheDuck.Issue(this.Numero, true, this.Etat)
+                );
+            });
+        });
         
+        var inducksInfo = collection.static;
+        $.each(inducksInfo.pays, CoaListing.addCountry);
+        $.each(inducksInfo.magazines, CoaListing.addPublication);
     }
     
     function alert(title, text, directText) {
@@ -72,6 +92,8 @@ WhatTheDuck.app = (function ($) {
 
     return {
 		user: user,
+		userCollection: userCollection,
+		coaCollection: coaCollection,
 		
 		setUser: setUser,
         init: init,

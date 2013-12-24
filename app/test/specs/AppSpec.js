@@ -167,4 +167,36 @@ describe('Collection handling', function() {
         
         expect(sortedList).toEqual(['1', '2', '* 3', 'A']);
     });
+    
+    it('should add issues from the online collection to the local one', function() {
+        var onlineCollection = {
+            "es/BCB":[
+                {"Numero":"1","Etat":"bon"}
+            ],
+            "fr/CB":[
+                 {"Numero":"P 88","Etat":"bon"}
+            ],
+            "fr/DDD":[
+                {"Numero":"1","Etat":"bon"},
+                {"Numero":"2","Etat":"bon"}
+            ]
+        };
+        
+        var countries = {
+            "es": "Espagne",
+            "fr": "France"
+        };
+        var publications = {
+            "es/BCB":"Biblioteca Carl Barks",
+            "fr/CB":"Collection Biblioth\u00e8que",
+            "fr/DDD":"La dynastie Donald Duck - Int\u00e9grale Carl Barks"
+        };
+        
+        WhatTheDuck.app.buildUserCollection({
+            numeros: onlineCollection, 
+            static: {pays: countries, magazines: publications}
+        });
+        
+        expect(Object.size(WhatTheDuck.app.userCollection.issues)).toEqual(2);
+    });
 });

@@ -12,6 +12,14 @@ var APPLICATION_VERSION = '2.0';
 var SECURITY_PASSWORD='';
 var PASSWORD_PLACEHOLDER = '******';
 
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
 function onPageBeforeChange(event, data) {
 
     if (typeof data.toPage === 'string') {
