@@ -8,11 +8,17 @@
 var DEMO_USERNAME = 'demo';
 var DEMO_PASSWORD;
 
+function waitForReturnOrFail() {
+	waitsFor(function() {
+		return hasRetrievedOrFailed;
+	}, 'The server should have been answered', 1000);
+}
+
 beforeEach(function() {
   this.addMatchers({
 		toBeANullErrorPopup: function() {
 			this.message = function() {
-				return 'Expected no error popup but saw one with '+$('#error_popup p').text();
+				return 'Expected no error popup but saw one with '+$('#error_popup').find('p').text();
 			};
 
 			return this.actual.length === 0;
@@ -100,12 +106,6 @@ describe('Authentication works', function() {
         $('#error_popup').remove();
     });
     
-    function waitForReturnOrFail() {
-        waitsFor(function() {
-            return hasRetrievedOrFailed;
-        }, "The server should have been answered", 1000);
-    }
-    
     it('Should throw an error when the security password is not provided or wrong', function() {
         
         var real_security_password = SECURITY_PASSWORD;
@@ -161,6 +161,19 @@ describe('Authentication works', function() {
 });
 
 describe('Collection handling', function() {
+
+	it('should throw an error if the collection is malformed', function() {
+		runs(function() {
+			handleRetrievedCollection('{a:b');
+		});
+
+		waitForReturnOrFail();
+
+		runs(function() {
+			expect($('#error_popup')).toBeAnErrorPopupWithMessage(i18n.t('internal_error__malformed_list'));
+		});
+	});
+
     it('should sort the issues correctly', function() {
         var list = ['2', 'A', '* 3', '1'];
         var sortedList = list.sort(WhatTheDuck.Collection.NamesComparator);
@@ -170,26 +183,26 @@ describe('Collection handling', function() {
     
     it('should add issues from the online collection to the local one', function() {
         var onlineCollection = {
-            "es/BCB":[
-                {"Numero":"1","Etat":"bon"}
+            'es/BCB':[
+                {Numero:'1', Etat:'bon'}
             ],
-            "fr/CB":[
-                 {"Numero":"P 88","Etat":"bon"}
+            'fr/CB':[
+                 {Numero:'P 88', Etat:'bon'}
             ],
-            "fr/DDD":[
-                {"Numero":"1","Etat":"bon"},
-                {"Numero":"2","Etat":"bon"}
+            'fr/DDD':[
+                {Numero: '1', Etat:'bon'},
+                {Numero: '2', Etat:'bon'}
             ]
         };
         
         var countries = {
-            "es": "Espagne",
-            "fr": "France"
+            'es': 'Espagne',
+            'fr': 'France'
         };
         var publications = {
-            "es/BCB":"Biblioteca Carl Barks",
-            "fr/CB":"Collection Biblioth\u00e8que",
-            "fr/DDD":"La dynastie Donald Duck - Int\u00e9grale Carl Barks"
+            'es/BCB':'Biblioteca Carl Barks',
+            'fr/CB':'Collection Biblioth\u00e8que',
+            'fr/DDD':'La dynastie Donald Duck - Int\u00e9grale Carl Barks'
         };
         
         WhatTheDuck.app.buildUserCollection({

@@ -60,6 +60,32 @@ function getPage(url, callback, parameters) {
 }
 
 var hasRetrievedOrFailed = true;
+
+function handleRetrievedCollection(response, callback) {
+	response = response.replace(/\\/,'');
+	if (response === '0') {
+		WhatTheDuck.app.alert('input_error','input_error__invalid_credentials');
+		WhatTheDuck.app.user.username = '';
+		hasRetrievedOrFailed = true;
+	}
+	else {
+		try{
+			var parsedResponse = JSON.parse(response);
+			hasRetrievedOrFailed = true;
+			callback(parsedResponse);
+			WhatTheDuck.app.user.username = '';
+		} catch(e){
+			hasRetrievedOrFailed = true;
+			if (response === i18n.t('internal_error__wrong_security_password')) {
+				WhatTheDuck.app.alert('internal_error', response, true);
+			}
+			else {
+				WhatTheDuck.app.alert('internal_error', 'internal_error__malformed_list');
+			}
+		}
+	}
+}
+
 function retrieveOrFail(urlSuffix, callback) {
     urlSuffix = urlSuffix || {};
     if (!hasRetrievedOrFailed) {
@@ -71,34 +97,16 @@ function retrieveOrFail(urlSuffix, callback) {
     if (navigator.onLine) {
         getServerURL(function(serverURL) {
             getPage(
-                serverURL+'/'+SERVER_PAGE, 
-                function(response) {
-                    hasRetrievedOrFailed = true;
-                    response = response.replace(/\\/,'');
-                    if (response === '0') {
-                        WhatTheDuck.app.alert('input_error','input_error__invalid_credentials');
-                        WhatTheDuck.app.user.username = '';
-                    }
-                    else {
-                        try{
-                            callback(JSON.parse(response));
-                            WhatTheDuck.app.user.username = '';
-                        } catch(e){
-                            if (response === i18n.t('internal_error__wrong_security_password')) {
-                                WhatTheDuck.app.alert('internal_error', response, true);
-                            }
-                            else {
-                                WhatTheDuck.app.alert('internal_error', e, true);
-                            }
-                        }
-                    }
-                },
-                $.extend({}, urlSuffix, {
-                    pseudo_user: WhatTheDuck.app.user.username,
-                    mdp_user:    WhatTheDuck.app.user.encryptedPassword,
-                    mdp:         SECURITY_PASSWORD,
-                    version:     APPLICATION_VERSION
-                })
+                serverURL+'/'+SERVER_PAGE,
+	            function(response) {
+		            handleRetrievedCollection(response, callback);
+	            },
+	            $.extend({}, urlSuffix, {
+		            pseudo_user: WhatTheDuck.app.user.username,
+		            mdp_user:    WhatTheDuck.app.user.encryptedPassword,
+		            mdp:         SECURITY_PASSWORD,
+		            version:     APPLICATION_VERSION
+	            })
             );
         });
     }
