@@ -7,15 +7,15 @@
 var WhatTheDuck = WhatTheDuck || {};
 WhatTheDuck.app = (function ($) {
     
-    var user;
-    var userCollection;
-    var coaCollection;
+    var user = null;
+    var userCollection = null;
+    var coaCollection = null;
 
     var countryList = [];
     var countryListStorageKey;
 
     function init(storageKey) {
-        countryListStorageKey = storageKey,
+        countryListStorageKey = storageKey;
         loadCountriesFromLocalStorage();
         
         this.userCollection = new WhatTheDuck.Collection();
@@ -41,13 +41,11 @@ WhatTheDuck.app = (function ($) {
     function createBlankCountry() {
 
         var dateCreated = new Date();
-        var id = new String(dateCreated.getTime()) + new String(getRandomInt(0, 100));
-        var countryModel = new WhatTheDuck.Country({
+        var id = '' + dateCreated.getTime() + getRandomInt(0, 100);
+        return new WhatTheDuck.Country({
             countrycode: id,
             countryname: 'ABC'+id
         });
-
-        return countryModel;
     }
     
     function getUserCollection(callback) {
@@ -73,6 +71,8 @@ WhatTheDuck.app = (function ($) {
         var inducksInfo = collection.static;
         $.each(inducksInfo.pays, CoaListing.addCountry);
         $.each(inducksInfo.magazines, CoaListing.addPublication);
+
+
     }
     
     function alert(title, text, directText) {
