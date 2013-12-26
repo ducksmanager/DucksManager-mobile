@@ -1,27 +1,29 @@
 /* From WhatTheDuck.js */
 /*global WhatTheDuck, SECURITY_PASSWORD, PASSWORD_PLACEHOLDER*/
 
+var isUserCollection = true;
+
 WhatTheDuck.controller = (function ($, app) {
 
     var loginBtn = '#login';
     var signupBtn = '#end_signup';
-
-    var countryListStorageKey = 'WhatTheDuck.CountryList';
     
     var welcomePageId = 'welcome-page';
 
+	var countryListPageId = 'country-list-page';
     var countryListSelector = '#country-list-content';
+	var countryListHeaderSelector = '#country-list-header';
     var noCountryCachedMsg = '<pre><div>No country</div></pre>';
-    var countryListPageId = 'country-list-page';
     var currentCountry = null;
 
+	var publicationListPageId = '#publication-list-page';
     var publicationListSelector = '#publication-list-content';
+	var publicationListHeaderSelector = '#publication-list-header';
     var noPublicationCachedMsg = '<pre><div>No publication</div></pre>';
-    var publicationListPageId = 'publication-list-page';
     var publicationCountry = null;
 
     function init() {        
-        app.init(countryListStorageKey);
+        app.init();
         $(document)
             .bind('pagechange', onPageChange)
             .bind('pagebeforechange', onPageBeforeChange)
@@ -75,7 +77,15 @@ WhatTheDuck.controller = (function ($, app) {
 
     function renderCountryList() {
 
-        var countryList = app.getCountryList();
+	    var header = $(countryListHeaderSelector);
+	    if (isUserCollection) {
+		    header.text(i18n.t('my_collection'));
+	    }
+	    else {
+		    header.text(i18n.t(['insert_issue_menu', 'insert_issue__choose_country'].join(' > ')));
+	    }
+
+	    var countryList = app.getCountryList(WhatTheDuck.app.userCollection.issues, isUserCollection);
         var view = $(countryListSelector);
 
         view.empty();
@@ -92,8 +102,21 @@ WhatTheDuck.controller = (function ($, app) {
             var ul = $('<ul id=\'notes-list\' data-role=\'listview\'></ul>').appendTo(view);
             for (var i = 0; i < countryCount; i++) {
                 country = countryList[i];
+	            var label = (isUserCollection && WhatTheDuck.app.userCollection.hasCountry(this)
+		            ? '*'
+		            : '')
+	                + country.fullName;
                 publicationPageUrl = 'index.html#'+publicationListPageId+'?countryId=' + country.countrycode;
-                $('<li>' + '<a data-role=\'button\' data-icon=\'delete\' data-url=\'' + publicationPageUrl + '\' href=\'' + publicationPageUrl + '\'>' + '<div>' + country.countryname + '</div>' + '<div class=\'list-item-narrative\'>' + country.countryname + '</div>' + '</a>' + '</li>').appendTo(ul);
+
+	            var row = $('.row.template')
+		            .clone(true)
+		            .removeClass('template')
+		            .attr({
+			            'data-url': publicationPageUrl,
+			            href: publicationPageUrl
+		            });
+	            ul.append(row);
+	            row.find('.label').text(label);
             }
 
             ul.listview();
@@ -144,6 +167,7 @@ WhatTheDuck.controller = (function ($, app) {
                 app.storeCredentials();
             }
             app.buildUserCollection(collection);
+	        $.mobile.changePage($('#'+countryListPageId));
         });
     }
 

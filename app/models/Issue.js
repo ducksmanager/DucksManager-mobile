@@ -2,7 +2,7 @@
 /*global WhatTheDuck*/
 
 WhatTheDuck.Issue = function(issue) {
-    this.issueNumber = issue.issuenumber;
+    this.issueNumber = issue.issueNumber;
     this.inCollection = issue.inCollection;
     this.issueCondition = issue.issueCondition;
 

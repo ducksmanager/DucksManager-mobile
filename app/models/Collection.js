@@ -5,52 +5,38 @@ WhatTheDuck.Collection = function() {
 	var selectedCountry = null;
 	var selectedPublication = null;
 	var selectedIssue = null;
-	var issues = [];
-	
+	var issues = {};
+
 	function addCountry(country) {
-		this.issues[country] = [];
+		issues[country] = {};
 	}
-	
+
 	function addPublication(country, publication) {
-		if (!this.issues[country]) {
-			this.addCountry(country);
+		if (!issues[country]) {
+			addCountry(country);
 		}
-		this.issues[country][publication] = [];
+		issues[country][publication] = [];
 	}
-	
+
 	function addIssueJoinedCountryAndPublication(countryAndPublication, issue) {
 		var country = countryAndPublication.split('/')[0];
-		this.addIssue(country, countryAndPublication, issue);
+		addIssue(country, countryAndPublication, issue);
 	}
-	
+
 	function addIssue(country, publication, issue) {
-		if (!this.issues[country]) {
-			this.addCountry(country);
+		if (!issues[country]) {
+			addCountry(country);
 		}
-		if (!this.issues[country][publication]) {
-			this.addPublication(country, publication);
+		if (!issues[country][publication]) {
+			addPublication(country, publication);
 		}
-		$.extend(this.issues[country][publication], issue);
+		issues[country][publication].push(issue);
 	}
-	
-	function getCountryList(type) {
-		var countryList = [];
-		var countrySet = $.map(this.issues, function(element,index) {
-			return index;
-		});
-		
-		$.each(countrySet, function() {
-			countryList.push((
-                WhatTheDuck.Collection.CollectionType.COA === type && 
-                WhatTheDuck.app.userCollection.hasCountry(this)
-					? '*'
-					: '')
-				+ CoaListing.getCountryFullName(this));
-		});
-		
-		return countryList.sort(WhatTheDuck.Collection.NamesComparator);
+
+	function hasCountry(countryShortName) {
+		return issues[countryShortName] && Object.size(issues[countryShortName]);
 	}
-	
+
 	return {
 	    selectedCountry: selectedCountry,
 	    selectedPublication: selectedPublication,
@@ -61,13 +47,17 @@ WhatTheDuck.Collection = function() {
         addPublication: addPublication,
         addIssueJoinedCountryAndPublication: addIssueJoinedCountryAndPublication,
         addIssue: addIssue,
-        getCountryList: getCountryList
+		hasCountry: hasCountry
 	};
 };
 
 WhatTheDuck.Collection.CollectionType = {
 	COA:  1,
 	USER: 2
+};
+
+WhatTheDuck.Collection.FullNamesComparator = function(a, b) {
+	return WhatTheDuck.Collection.NamesComparator(a.fullName, b.fullName);
 };
 
 WhatTheDuck.Collection.NamesComparator = function(a, b) {

@@ -2,14 +2,18 @@
 /*global WhatTheDuck*/
 
 var CoaListing = {
-    countryNames: [],
-    publicationNames: []
+    countryNames: {},
+    publicationNames: {}
 };
 
-CoaListing.addCountry = function(shortName, fullName) {
-    CoaListing.countryNames.push(new WhatTheDuck.Country(shortName, fullName));
+CoaListing.addCountry = function(country) {
+    CoaListing.countryNames[country.shortName] = new WhatTheDuck.Country(country);
 };
 
-CoaListing.addPublication = function(shortName, fullName) {
-    CoaListing.publicationNames.push(new WhatTheDuck.Publication(shortName, fullName));
+CoaListing.addPublication = function(publication) {
+    CoaListing.publicationNames[publication.shortName] = new WhatTheDuck.Publication(publication);
+};
+
+CoaListing.getCountryFullName = function(shortName) {
+	return CoaListing.countryNames[shortName];
 };

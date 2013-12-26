@@ -9,42 +9,30 @@ WhatTheDuck.app = (function ($) {
     
     var user = null;
     var userCollection = null;
-    var coaCollection = null;
 
-    var countryList = [];
-    var countryListStorageKey;
-
-    function init(storageKey) {
-        countryListStorageKey = storageKey;
-        loadCountriesFromLocalStorage();
-        
+    function init() {
         this.userCollection = new WhatTheDuck.Collection();
-        this.coaCollection = new WhatTheDuck.Collection();
     }
 
-    function getCountryList() {
-        return countryList;
-    }
+	function getCountryList(issues, isUserCollection) {
+		var countryList = [];
+		return $.map(issues, function(element,index) {
+			return CoaListing.getCountryFullName(index);
+		})
+			.sort(WhatTheDuck.Collection.FullNamesComparator);
+	}
 	
 	function setUser(newUser) {
 		this.user = newUser;
 	}
-
-    function loadCountriesFromLocalStorage() {
-        var storedCountries = $.jStorage.get(countryListStorageKey);
-
-        if (storedCountries !== null) {
-            countryList = storedCountries;
-        }
-    }
 
     function createBlankCountry() {
 
         var dateCreated = new Date();
         var id = '' + dateCreated.getTime() + getRandomInt(0, 100);
         return new WhatTheDuck.Country({
-            countrycode: id,
-            countryname: 'ABC'+id
+            shortName: id,
+            fullName: 'ABC'+id
         });
     }
     
@@ -63,16 +51,22 @@ WhatTheDuck.app = (function ($) {
             $.each(publicationIssues, function() {
                 WhatTheDuck.app.userCollection.addIssueJoinedCountryAndPublication(
                     countryAndPublication, 
-                    new WhatTheDuck.Issue(this.Numero, true, this.Etat)
+                    new WhatTheDuck.Issue({
+	                    issueNumber: this.Numero,
+	                    inCollection: true,
+	                    issueCondition: this.Etat
+                    })
                 );
             });
         });
         
         var inducksInfo = collection.static;
-        $.each(inducksInfo.pays, CoaListing.addCountry);
-        $.each(inducksInfo.magazines, CoaListing.addPublication);
-
-
+        $.each(inducksInfo.pays, function(shortName, fullName) {
+	        CoaListing.addCountry({shortName: shortName, fullName: fullName});
+        });
+        $.each(inducksInfo.magazines, function(shortName, fullName) {
+	        CoaListing.addPublication({shortName: shortName, fullName: fullName});
+        });
     }
     
     function alert(title, text, directText) {
@@ -93,7 +87,6 @@ WhatTheDuck.app = (function ($) {
     return {
 		user: user,
 		userCollection: userCollection,
-		coaCollection: coaCollection,
 		
 		setUser: setUser,
         init: init,

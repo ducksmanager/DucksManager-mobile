@@ -8,10 +8,47 @@
 var DEMO_USERNAME = 'demo';
 var DEMO_PASSWORD;
 
+var onlineCollection;
+var countries;
+var publications;
+
 function waitForReturnOrFail() {
 	waitsFor(function() {
 		return hasRetrievedOrFailed;
 	}, 'The server should have been answered', 1000);
+}
+
+function initCollection() {
+	WhatTheDuck.app.setUser(new WhatTheDuck.User({
+		username: DEMO_USERNAME,
+		encryptedPassword: CryptoJS.SHA1(DEMO_PASSWORD).toString()
+	}));
+
+	WhatTheDuck.app.userCollection = new WhatTheDuck.Collection();
+
+	onlineCollection = {
+		'es/BCB':[
+			{Numero:'1', Etat:'bon'}
+		],
+		'fr/CB':[
+			{Numero:'P 88', Etat:'bon'}
+		],
+		'fr/DDD':[
+			{Numero: '1', Etat:'bon'},
+			{Numero: '2', Etat:'bon'}
+		]
+	};
+
+	countries = {
+		'es': 'Espagne',
+		'fr': 'France'
+	};
+
+	publications = {
+		'es/BCB':'Biblioteca Carl Barks',
+		'fr/CB':'Collection Biblioth\u00e8que',
+		'fr/DDD':'La dynastie Donald Duck - Int\u00e9grale Carl Barks'
+	};
 }
 
 beforeEach(function() {
@@ -38,8 +75,6 @@ beforeEach(function() {
 });
 
 describe('Public interface exists', function () {
-    
-    var notesListStorageKey = 'WhatTheDuck.CountryList';
 
     it('Defines the app', function () {
         expect(WhatTheDuck.app).toBeDefined();
@@ -49,30 +84,22 @@ describe('Public interface exists', function () {
         expect(WhatTheDuck.app.init).toBeDefined();
     });
 
-    it('Should have public interface to return country list', function () {
-        expect(WhatTheDuck.app.getCountryList).toBeDefined();
-    });
-
     it('Should return country list', function () {
-        var countryList = WhatTheDuck.app.getCountryList();
+	    WhatTheDuck.app.userCollection = new WhatTheDuck.Collection();
+	    WhatTheDuck.app.userCollection.addIssue('fr','fr/DDD', new WhatTheDuck.Issue({
+		    issueNumber: '1',
+		    inCollection: true,
+		    issueCondition: null
+	    }));
+
+        var countryList = WhatTheDuck.app.getCountryList(WhatTheDuck.app.userCollection, true);
         expect(countryList instanceof Array).toBeTruthy();
     });
 
     it('Returns a blank country', function () {
         var blankCountry = WhatTheDuck.app.createBlankCountry();
-        expect(blankCountry.countrycode.length > 0).toBeTruthy();
-        expect(blankCountry.countryname.length > 0).toBeTruthy();
-    });
-
-    it('Returns dummy countries saved in local storage', function () {
-
-        WhatTheDuck.testHelper.createDummyCountries(notesListStorageKey);
-        // Load dummy notes from ls.
-        WhatTheDuck.app.init(notesListStorageKey);
-
-        var countryList = WhatTheDuck.app.getCountryList();
-
-        expect(countryList.length > 0).toBeTruthy();
+        expect(blankCountry.shortName.length > 0).toBeTruthy();
+        expect(blankCountry.fullName.length > 0).toBeTruthy();
     });
 });
 
@@ -162,6 +189,8 @@ describe('Authentication works', function() {
 
 describe('Collection handling', function() {
 
+	beforeEach(initCollection);
+
 	it('should throw an error if the collection is malformed', function() {
 		runs(function() {
 			handleRetrievedCollection('{a:b');
@@ -182,34 +211,24 @@ describe('Collection handling', function() {
     });
     
     it('should add issues from the online collection to the local one', function() {
-        var onlineCollection = {
-            'es/BCB':[
-                {Numero:'1', Etat:'bon'}
-            ],
-            'fr/CB':[
-                 {Numero:'P 88', Etat:'bon'}
-            ],
-            'fr/DDD':[
-                {Numero: '1', Etat:'bon'},
-                {Numero: '2', Etat:'bon'}
-            ]
-        };
-        
-        var countries = {
-            'es': 'Espagne',
-            'fr': 'France'
-        };
-        var publications = {
-            'es/BCB':'Biblioteca Carl Barks',
-            'fr/CB':'Collection Biblioth\u00e8que',
-            'fr/DDD':'La dynastie Donald Duck - Int\u00e9grale Carl Barks'
-        };
-        
         WhatTheDuck.app.buildUserCollection({
             numeros: onlineCollection, 
             static: {pays: countries, magazines: publications}
         });
         
-        expect(Object.size(WhatTheDuck.app.userCollection.issues)).toEqual(2);
+        expect(Object.size(WhatTheDuck.app.userCollection.issues)).toEqual(Object.size(countries));
+	    var actualPublicationNumber = 0;
+	    $.each(WhatTheDuck.app.userCollection.issues, function() {
+		    actualPublicationNumber += Object.size(this);
+	    });
+	    expect(actualPublicationNumber).toEqual(Object.size(publications));
     });
+});
+
+describe('COA listing', function() {
+
+	it('should get the user collecion\'s country list', function() {
+		var countryFullName = CoaListing.getCountryFullName('fr');
+		expect(countryFullName.fullName).toEqual(countries.fr);
+	});
 });

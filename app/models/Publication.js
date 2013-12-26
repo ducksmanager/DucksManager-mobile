@@ -1,4 +1,6 @@
 WhatTheDuck.Publication = function (publication) {
-    this.publicationcode = publication.publicationcode;
-    this.publicationname = publication.publicationname;
+    this.shortName = publication.shortName;
+    this.fullName = publication.fullName;
+
+	return this;
 };
