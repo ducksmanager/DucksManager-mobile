@@ -14,6 +14,10 @@ CoaListing.addPublication = function(publication) {
     CoaListing.publicationNames[publication.shortName] = new WhatTheDuck.Publication(publication);
 };
 
-CoaListing.getCountryFullName = function(shortName) {
+CoaListing.getCountry = function(shortName) {
 	return CoaListing.countryNames[shortName];
+};
+
+CoaListing.getPublication = function(publicationShortName) {
+	return CoaListing.publicationNames[publicationShortName];
 };

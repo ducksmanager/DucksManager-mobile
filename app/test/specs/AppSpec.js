@@ -13,65 +13,70 @@ var countries;
 var publications;
 
 function waitForReturnOrFail() {
-	waitsFor(function() {
-		return hasRetrievedOrFailed;
-	}, 'The server should have been answered', 1000);
+    waitsFor(function() {
+        return hasRetrievedOrFailed;
+    }, 'The server should have been answered', 1000);
 }
 
 function initCollection() {
-	WhatTheDuck.app.setUser(new WhatTheDuck.User({
-		username: DEMO_USERNAME,
-		encryptedPassword: CryptoJS.SHA1(DEMO_PASSWORD).toString()
-	}));
+    WhatTheDuck.app.setUser(new WhatTheDuck.User({
+        username: DEMO_USERNAME,
+        encryptedPassword: CryptoJS.SHA1(DEMO_PASSWORD).toString()
+    }));
 
-	WhatTheDuck.app.userCollection = new WhatTheDuck.Collection();
+    WhatTheDuck.app.userCollection = new WhatTheDuck.Collection();
 
-	onlineCollection = {
-		'es/BCB':[
-			{Numero:'1', Etat:'bon'}
-		],
-		'fr/CB':[
-			{Numero:'P 88', Etat:'bon'}
-		],
-		'fr/DDD':[
-			{Numero: '1', Etat:'bon'},
-			{Numero: '2', Etat:'bon'}
-		]
-	};
+    onlineCollection = {
+        'es/BCB':[
+            {Numero:'1', Etat:'bon'}
+        ],
+        'fr/CB':[
+            {Numero:'P 88', Etat:'bon'}
+        ],
+        'fr/DDD':[
+            {Numero: '1', Etat:'bon'},
+            {Numero: '2', Etat:'bon'}
+        ]
+    };
 
-	countries = {
-		'es': 'Espagne',
-		'fr': 'France'
-	};
+    countries = {
+        'es': 'Espagne',
+        'fr': 'France'
+    };
 
-	publications = {
-		'es/BCB':'Biblioteca Carl Barks',
-		'fr/CB':'Collection Biblioth\u00e8que',
-		'fr/DDD':'La dynastie Donald Duck - Int\u00e9grale Carl Barks'
-	};
+    publications = {
+        'es/BCB':'Biblioteca Carl Barks',
+        'fr/CB':'Collection Biblioth\u00e8que',
+        'fr/DDD':'La dynastie Donald Duck - Int\u00e9grale Carl Barks'
+    };
+    
+    WhatTheDuck.app.buildUserCollection({
+        numeros: onlineCollection, 
+        static: {pays: countries, magazines: publications}
+    });
 }
 
 beforeEach(function() {
   this.addMatchers({
-		toBeANullErrorPopup: function() {
-			this.message = function() {
-				return 'Expected no error popup but saw one with '+$('#error_popup').find('p').text();
-			};
+        toBeANullErrorPopup: function() {
+            this.message = function() {
+                return 'Expected no error popup but saw one with '+$('#error_popup').find('p').text();
+            };
 
-			return this.actual.length === 0;
-		},
-		
-		toBeAnErrorPopupWithMessage: function(errorText) {
-			this.message = function() {
-				if (this.actual.length === 0) {
-					return 'Expected an error popup with message '+errorText+' but got none';
-				}
-				return 'Expected an error popup with message '+errorText+' but got '+this.actual.find('p').text();
-			};
+            return this.actual.length === 0;
+        },
+        
+        toBeAnErrorPopupWithMessage: function(errorText) {
+            this.message = function() {
+                if (this.actual.length === 0) {
+                    return 'Expected an error popup with message '+errorText+' but got none';
+                }
+                return 'Expected an error popup with message '+errorText+' but got '+this.actual.find('p').text();
+            };
 
-			return this.actual.length === 1 && this.actual.find('p').text() === errorText;
-		}
-	});
+            return this.actual.length === 1 && this.actual.find('p').text() === errorText;
+        }
+    });
 });
 
 describe('Public interface exists', function () {
@@ -82,18 +87,6 @@ describe('Public interface exists', function () {
 
     it('Has init function', function () {
         expect(WhatTheDuck.app.init).toBeDefined();
-    });
-
-    it('Should return country list', function () {
-	    WhatTheDuck.app.userCollection = new WhatTheDuck.Collection();
-	    WhatTheDuck.app.userCollection.addIssue('fr','fr/DDD', new WhatTheDuck.Issue({
-		    issueNumber: '1',
-		    inCollection: true,
-		    issueCondition: null
-	    }));
-
-        var countryList = WhatTheDuck.app.getCountryList(WhatTheDuck.app.userCollection, true);
-        expect(countryList instanceof Array).toBeTruthy();
     });
 
     it('Returns a blank country', function () {
@@ -154,11 +147,11 @@ describe('Authentication works', function() {
     it('Should refuse invalid credentials', function() {
        
        runs(function() {
-			WhatTheDuck.app.setUser({
-				username: DEMO_USERNAME,
-				encryptedPassword: CryptoJS.SHA1('a fake user password').toString()
-			});
-			WhatTheDuck.app.getUserCollection();
+            WhatTheDuck.app.setUser({
+                username: DEMO_USERNAME,
+                encryptedPassword: CryptoJS.SHA1('a fake user password').toString()
+            });
+            WhatTheDuck.app.getUserCollection();
        });
        
        waitForReturnOrFail();
@@ -178,8 +171,8 @@ describe('Authentication works', function() {
                 expect(typeof collection['static']).toEqual('object');
             });
         });
-		
-		waitForReturnOrFail();
+        
+        waitForReturnOrFail();
         
         runs(function() {
             expect($('#error_popup')).toBeANullErrorPopup();
@@ -189,19 +182,19 @@ describe('Authentication works', function() {
 
 describe('Collection handling', function() {
 
-	beforeEach(initCollection);
+    beforeEach(initCollection);
 
-	it('should throw an error if the collection is malformed', function() {
-		runs(function() {
-			handleRetrievedCollection('{a:b');
-		});
+    it('should throw an error if the collection is malformed', function() {
+        runs(function() {
+            handleRetrievedCollection('{a:b');
+        });
 
-		waitForReturnOrFail();
+        waitForReturnOrFail();
 
-		runs(function() {
-			expect($('#error_popup')).toBeAnErrorPopupWithMessage(i18n.t('internal_error__malformed_list'));
-		});
-	});
+        runs(function() {
+            expect($('#error_popup')).toBeAnErrorPopupWithMessage(i18n.t('internal_error__malformed_list'));
+        });
+    });
 
     it('should sort the issues correctly', function() {
         var list = ['2', 'A', '* 3', '1'];
@@ -211,24 +204,39 @@ describe('Collection handling', function() {
     });
     
     it('should add issues from the online collection to the local one', function() {
-        WhatTheDuck.app.buildUserCollection({
-            numeros: onlineCollection, 
-            static: {pays: countries, magazines: publications}
-        });
-        
         expect(Object.size(WhatTheDuck.app.userCollection.issues)).toEqual(Object.size(countries));
-	    var actualPublicationNumber = 0;
-	    $.each(WhatTheDuck.app.userCollection.issues, function() {
-		    actualPublicationNumber += Object.size(this);
-	    });
-	    expect(actualPublicationNumber).toEqual(Object.size(publications));
+        var actualPublicationNumber = 0;
+        $.each(WhatTheDuck.app.userCollection.issues, function() {
+            actualPublicationNumber += Object.size(this);
+        });
+        expect(actualPublicationNumber).toEqual(Object.size(publications));
+    });
+    
+    it('should display the list of countries related to the user\'s collection', function() {
+        var countryList = WhatTheDuck.app.getCountryList(WhatTheDuck.app.userCollection.issues, true);
+        expect(countryList.length).toEqual(2);
     });
 });
 
 describe('COA listing', function() {
 
-	it('should get the user collecion\'s country list', function() {
-		var countryFullName = CoaListing.getCountryFullName('fr');
-		expect(countryFullName.fullName).toEqual(countries.fr);
-	});
+    it('should get the user collection\'s country list', function() {
+        var country = CoaListing.getCountry('fr');
+        expect(country.fullName).toEqual(countries.fr);
+    });
+
+    it('should display a country name properly', function() {
+        var country = CoaListing.getCountry('fr');
+        
+        var countryLabelUserCollection = WhatTheDuck.app.getCountryLabel(country, true);
+        expect(countryLabelUserCollection).toEqual(countries.fr);
+        
+        var countryLabelUserCollection = WhatTheDuck.app.getCountryLabel(country, false);
+        expect(countryLabelUserCollection).toEqual('* '+countries.fr);
+    });
+
+    it('should get the user collection\'s publication list', function() {
+        var publication = CoaListing.getPublication('fr/DDD');
+        expect(publication.fullName).toEqual(publications['fr/DDD']);
+    });
 });
