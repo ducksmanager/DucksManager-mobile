@@ -11,7 +11,7 @@ WhatTheDuck.app = (function ($) {
     var userCollection = null;
     
     // Fetches the passwords from the URL's parameters if provided
-	function processParameters() {
+    function processParameters() {
         var parameters = queryStringToObject(document.URL);
         
         if (parameters.security) {
@@ -40,23 +40,23 @@ WhatTheDuck.app = (function ($) {
             + publication.fullName;
     }
 
-	function getCountryList(issues, isUserCollection) {
-		return $.map(issues, function(publications, shortName) {
-			return CoaListing.getCountry(shortName);
-		})
-			.sort(WhatTheDuck.Collection.FullNamesComparator);
-	}
+    function getCountryList(issues, isUserCollection) {
+        return $.map(issues, function(publications, shortName) {
+            return CoaListing.getCountry(shortName);
+        })
+            .sort(WhatTheDuck.Collection.FullNamesComparator);
+    }
 
-	function getPublicationList(issues, country, isUserCollection) {
-		return $.map(issues[country], function(element,shortName) {
-			return CoaListing.getPublication(shortName);
-		})
-			.sort(WhatTheDuck.Collection.FullNamesComparator);
-	}
-	
-	function setUser(newUser) {
-		this.user = newUser;
-	}
+    function getPublicationList(issues, country, isUserCollection) {
+        return $.map(issues[country], function(element,shortName) {
+            return CoaListing.getPublication(shortName);
+        })
+            .sort(WhatTheDuck.Collection.FullNamesComparator);
+    }
+    
+    function setUser(newUser) {
+        this.user = newUser;
+    }
 
     function createBlankCountry() {
 
@@ -84,9 +84,9 @@ WhatTheDuck.app = (function ($) {
                 WhatTheDuck.app.userCollection.addIssueJoinedCountryAndPublication(
                     countryAndPublication, 
                     new WhatTheDuck.Issue({
-	                    issueNumber: this.Numero,
-	                    inCollection: true,
-	                    issueCondition: this.Etat
+                        issueNumber: this.Numero,
+                        inCollection: true,
+                        issueCondition: this.Etat
                     })
                 );
             });
@@ -94,10 +94,10 @@ WhatTheDuck.app = (function ($) {
         
         var inducksInfo = collection.static;
         $.each(inducksInfo.pays, function(shortName, fullName) {
-	        CoaListing.addCountry({shortName: shortName, fullName: fullName});
+            CoaListing.addCountry({shortName: shortName, fullName: fullName});
         });
         $.each(inducksInfo.magazines, function(shortName, fullName) {
-	        CoaListing.addPublication({shortName: shortName, fullName: fullName});
+            CoaListing.addPublication({shortName: shortName, fullName: fullName});
         });
     }
     
@@ -119,10 +119,10 @@ WhatTheDuck.app = (function ($) {
     processParameters();
 
     return {
-		user: user,
-		userCollection: userCollection,
-		
-		setUser: setUser,
+        user: user,
+        userCollection: userCollection,
+        
+        setUser: setUser,
         init: init,
         getCountryLabel: getCountryLabel,
         getPublicationLabel: getPublicationLabel,
