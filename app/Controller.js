@@ -16,7 +16,7 @@ WhatTheDuck.controller = (function ($, app) {
     var noCountryCachedMsg = '<pre><div>No country</div></pre>';
     var currentCountry = null;
 
-	var publicationListPageId = '#publication-list-page';
+	var publicationListPageId = 'publication-list-page';
     var publicationListSelector = '#publication-list-content';
 	var publicationListHeaderSelector = '#publication-list-header';
     var noPublicationCachedMsg = '<pre><div>No publication</div></pre>';
@@ -106,17 +106,19 @@ WhatTheDuck.controller = (function ($, app) {
 		            ? '*'
 		            : '')
 	                + country.fullName;
-                publicationPageUrl = 'index.html#'+publicationListPageId+'?countryId=' + country.countrycode;
+                publicationPageUrl = 'index.html#'+publicationListPageId+'?countryId=' + country.shortName;
 
 	            var row = $('.row.template')
 		            .clone(true)
-		            .removeClass('template')
+		            .removeClass('template');
+	            ul.append(row);
+	            row.find('a')
 		            .attr({
 			            'data-url': publicationPageUrl,
 			            href: publicationPageUrl
 		            });
-	            ul.append(row);
-	            row.find('.label').text(label);
+	            row.find('.label')
+	                .text(label);
             }
 
             ul.listview();
