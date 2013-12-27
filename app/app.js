@@ -1,5 +1,5 @@
 /* From common.js */
-/*global getRandomInt, retrieveOrFail*/
+/*global getRandomInt, retrieveOrFail, queryStringToObject, SECURITY_PASSWORD, DEMO_PASSWORD*/
 
 /* From coa.js */
 /*global CoaListing*/
@@ -9,13 +9,24 @@ WhatTheDuck.app = (function ($) {
     
     var user = null;
     var userCollection = null;
-
+    
+    // Fetches the passwords from the URL's parameters if provided
+	function processParameters() {
+        var parameters = queryStringToObject(document.URL);
+        
+        if (parameters.security) {
+            SECURITY_PASSWORD = parameters.security;
+        }
+        if (parameters.demo_password) {
+            DEMO_PASSWORD = parameters.demo_password;
+        }
+    }
+    
     function init() {
         this.userCollection = new WhatTheDuck.Collection();
     }
 
 	function getCountryList(issues, isUserCollection) {
-		var countryList = [];
 		return $.map(issues, function(element,index) {
 			return CoaListing.getCountryFullName(index);
 		})
@@ -83,6 +94,8 @@ WhatTheDuck.app = (function ($) {
         .popup('open')
         .trigger("create");
     }
+    
+    processParameters();
 
     return {
 		user: user,
