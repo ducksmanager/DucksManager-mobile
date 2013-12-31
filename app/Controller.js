@@ -21,15 +21,15 @@ WhatTheDuck.controller = (function ($, app) {
             page: 'country-list-page',
             header: '#country-list-header',
             list: '#country-list-content',
-            itemParameter: 'countryId',
-            itemTarget: 'publications',
+            itemParameter: 'countryShortName',
+            itemTarget: 'publications'
         },
         publications: {
             page: 'publication-list-page',
             header: '#publication-list-header',
             list: '#publication-list-content',
-            itemParameter: 'publicationId',
-            itemTarget: 'issues',
+            itemParameter: 'publicationShortName',
+            itemTarget: 'issues'
         },
         issues: {
             page: 'issue-list-page',
@@ -73,8 +73,13 @@ WhatTheDuck.controller = (function ($, app) {
                 if (fromPageId === selectors.countries.page) {
                     renderPublicationList(data);
                 }
-
             break;
+
+	        case selectors.issues.page:
+		        if (fromPageId === selectors.publications.page) {
+			        renderIssueList(data);
+		        }
+		        break;
         }
     }
     
@@ -121,19 +126,25 @@ WhatTheDuck.controller = (function ($, app) {
                     case 'publications':
                         label = app.getPublicationLabel(item, isUserCollection);
                     break;
+	                case 'issues':
+		                label = app.getIssueLabel(item, isUserCollection);
+		            break;
                 }
-                targetPageUrl = 'index.html#'+selectors[target].page+'?'+selectors[type].itemParameter+'=' + item.shortName;
 
                 var row = $('.row.template')
                     .clone(true)
                     .removeClass('template');
                 ul.append(row);
-                
-                row.find('a')
-                    .attr({
-                        'data-url': targetPageUrl,
-                        href: targetPageUrl
-                    });
+
+	            if (selectors[target]) {
+		            targetPageUrl = 'index.html#'+selectors[target].page+'?'+selectors[type].itemParameter+'=' + item.shortName.replace(/\//,'.');
+	                row.find('a')
+	                    .attr({
+	                        'data-url': targetPageUrl,
+	                        href: targetPageUrl
+	                    });
+	            }
+
                 row.find('.label')
                     .text(label);
             }
@@ -160,7 +171,7 @@ WhatTheDuck.controller = (function ($, app) {
 
         var parameters = queryStringToObject(data.options.target);
         
-        var country = CoaListing.getCountry(parameters.countryId);
+        var country = CoaListing.getCountry(parameters.countryShortName);
             
         var header = $(selectors.publications.header);
         if (isUserCollection) {
@@ -173,6 +184,25 @@ WhatTheDuck.controller = (function ($, app) {
         var publicationList = app.getPublicationList(WhatTheDuck.app.userCollection.issues, country.shortName, isUserCollection);
         renderList('publications', publicationList, isUserCollection);
     }
+
+	function renderIssueList(data) {
+
+		var parameters = queryStringToObject(data.options.target);
+
+		var publication = CoaListing.getPublication(parameters.publicationShortName.replace(/\./,'/'));
+		var country = CoaListing.getCountry(publication.shortName.split('/')[0]);
+
+		var header = $(selectors.issues.header);
+		if (isUserCollection) {
+			header.text([i18n.t('my_collection'), country.fullName, publication.fullName].join(' > '));
+		}
+		else {
+			header.text([i18n.t('insert_issue_menu'), country.fullName, publication.fullName].join(' > '));
+		}
+
+		var issueList = app.getIssueList(WhatTheDuck.app.userCollection.issues, country.shortName, publication.shortName, isUserCollection);
+		renderList('issues', issueList, isUserCollection);
+	}
 
     return {
         init: init

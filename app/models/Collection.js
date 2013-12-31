@@ -37,6 +37,26 @@ WhatTheDuck.Collection = function() {
 		return issues[countryShortName] && Object.size(issues[countryShortName]);
 	}
 
+	function hasPublication(publicationShortName) {
+		var countryShortName = publicationShortName.split('/')[0];
+		return hasCountry(countryShortName)
+			&& issues[countryShortName][publicationShortName] && Object.size(issues[countryShortName][publicationShortName]);
+	}
+
+	function getIssue(publicationShortName, issueNumber) {
+		var issueFound = null;
+		var countryShortName = publicationShortName.split('/')[0];
+		if (hasPublication(publicationShortName)) {
+			$.each(issues[countryShortName][publicationShortName], function() {
+				if (this.issueNumber === issueNumber) {
+					issueFound = this;
+					return false;
+				}
+			});
+		}
+		return issueFound;
+	}
+
 	return {
 	    selectedCountry: selectedCountry,
 	    selectedPublication: selectedPublication,
@@ -47,7 +67,9 @@ WhatTheDuck.Collection = function() {
         addPublication: addPublication,
         addIssueJoinedCountryAndPublication: addIssueJoinedCountryAndPublication,
         addIssue: addIssue,
-		hasCountry: hasCountry
+		hasCountry: hasCountry,
+		hasPublication: hasPublication,
+		getIssue: getIssue
 	};
 };
 
@@ -58,6 +80,10 @@ WhatTheDuck.Collection.CollectionType = {
 
 WhatTheDuck.Collection.FullNamesComparator = function(a, b) {
 	return WhatTheDuck.Collection.NamesComparator(a.fullName, b.fullName);
+};
+
+WhatTheDuck.Collection.IssueComparator = function(a, b) {
+	return WhatTheDuck.Collection.NamesComparator(a.issueNumber, b.issueNumber);
 };
 
 WhatTheDuck.Collection.NamesComparator = function(a, b) {

@@ -40,6 +40,13 @@ WhatTheDuck.app = (function ($) {
             + publication.fullName;
     }
 
+	function getIssueLabel(issue, isUserCollection) {
+		return (!isUserCollection && WhatTheDuck.app.userCollection.hasIssue(publication.shortName)
+			? '* '
+			: '')
+			+ issue.issueNumber;
+	}
+
     function getCountryList(issues, isUserCollection) {
         return $.map(issues, function(publications, shortName) {
             return CoaListing.getCountry(shortName);
@@ -53,6 +60,11 @@ WhatTheDuck.app = (function ($) {
         })
             .sort(WhatTheDuck.Collection.FullNamesComparator);
     }
+
+	function getIssueList(issues, country, publication, isUserCollection) {
+		return issues[country][publication]
+			.sort(WhatTheDuck.Collection.IssueComparator);
+	}
     
     function setUser(newUser) {
         this.user = newUser;
@@ -126,8 +138,10 @@ WhatTheDuck.app = (function ($) {
         init: init,
         getCountryLabel: getCountryLabel,
         getPublicationLabel: getPublicationLabel,
+	    getIssueLabel: getIssueLabel,
         getCountryList: getCountryList,
         getPublicationList: getPublicationList,
+	    getIssueList: getIssueList,
         createBlankCountry: createBlankCountry,
         getUserCollection: getUserCollection,
         storeCredentials: storeCredentials,
