@@ -216,6 +216,17 @@ describe('Collection handling', function() {
         var countryList = WhatTheDuck.app.getCountryList(WhatTheDuck.app.userCollection.issues, true);
         expect(countryList.length).toEqual(2);
     });
+
+	it('should get the CSS class name relative to the condition of an issue', function() {
+		var publication = CoaListing.getPublication('fr/DDD');
+		var cssClass = WhatTheDuck.app.getIssueConditionClass(publication, WhatTheDuck.app.userCollection.issues.fr['fr/DDD'][0]);
+		expect(cssClass).toEqual('good_condition');
+
+		var fakeIssue = $.extend({}, WhatTheDuck.app.userCollection.issues.fr['fr/DDD'][0], {issueNumber: 99});
+		cssClass = WhatTheDuck.app.getIssueConditionClass(publication, fakeIssue);
+		expect(cssClass).toEqual('no_condition');
+
+	});
 });
 
 describe('COA listing', function() {
@@ -227,11 +238,12 @@ describe('COA listing', function() {
 
     it('should display a country name properly', function() {
         var country = CoaListing.getCountry('fr');
-        
-        var countryLabelUserCollection = WhatTheDuck.app.getCountryLabel(country, true);
+	    var countryLabelUserCollection;
+
+	    countryLabelUserCollection = WhatTheDuck.app.getCountryLabel(country, true);
         expect(countryLabelUserCollection).toEqual(countries.fr);
         
-        var countryLabelUserCollection = WhatTheDuck.app.getCountryLabel(country, false);
+        countryLabelUserCollection = WhatTheDuck.app.getCountryLabel(country, false);
         expect(countryLabelUserCollection).toEqual('* '+countries.fr);
     });
 

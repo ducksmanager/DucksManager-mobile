@@ -11,3 +11,23 @@ label {
 .template {
     display: none;
 }
+
+#issues-list .row .ui-icon {
+    background: transparent 0;
+}
+
+#issues-list .row.good_condition .ui-icon {
+    background-color: #2CA77B;
+}
+
+#issues-list .row.notsogood_condition .ui-icon {
+    background-color: #FF8000;
+}
+
+#issues-list .row.bad_condition .ui-icon {
+    background-color: #FF0000;
+}
+
+#issues-list .row.no_condition .ui-icon {
+    background-image: url('../img/condition_none.png');
+}

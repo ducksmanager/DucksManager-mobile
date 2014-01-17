@@ -40,7 +40,7 @@ WhatTheDuck.controller = (function ($, app) {
 
     var currentCountry = null;
 
-    var publicationCountry = null;
+    var currentPublication = null;
 
     function init() {        
         app.init();
@@ -114,9 +114,10 @@ WhatTheDuck.controller = (function ($, app) {
 
             var itemCount = list.length;
             var item;
+	        var itemClass;
             var targetPageUrl;
             var label;
-            var ul = $('<ul id=\'notes-list\' data-role=\'listview\'></ul>').appendTo(view);
+            var ul = $('<ul id=\''+type+'-list\' data-role=\'listview\'></ul>').appendTo(view);
             for (var i = 0; i < itemCount; i++) {
                 item = list[i];
                 switch(type) {
@@ -127,7 +128,8 @@ WhatTheDuck.controller = (function ($, app) {
                         label = app.getPublicationLabel(item, isUserCollection);
                     break;
 	                case 'issues':
-		                label = app.getIssueLabel(item, isUserCollection);
+		                label = app.getIssueLabel(currentPublication, item, isUserCollection);
+		                itemClass = app.getIssueConditionClass(currentPublication, item, isUserCollection);
 		            break;
                 }
 
@@ -143,6 +145,10 @@ WhatTheDuck.controller = (function ($, app) {
 	                        'data-url': targetPageUrl,
 	                        href: targetPageUrl
 	                    });
+	            }
+
+	            if (itemClass) {
+		            row.addClass(itemClass);
 	            }
 
                 row.find('.label')
@@ -170,18 +176,18 @@ WhatTheDuck.controller = (function ($, app) {
     function renderPublicationList(data) {
 
         var parameters = queryStringToObject(data.options.target);
-        
-        var country = CoaListing.getCountry(parameters.countryShortName);
+
+	    currentCountry = CoaListing.getCountry(parameters.countryShortName);
             
         var header = $(selectors.publications.header);
         if (isUserCollection) {
-            header.text([i18n.t('my_collection'), country.fullName].join(' > '));
+            header.text([i18n.t('my_collection'), currentCountry.fullName].join(' > '));
         }
         else {
-            header.text([i18n.t('insert_issue_menu'), country.fullName].join(' > '));
+            header.text([i18n.t('insert_issue_menu'), currentCountry.fullName].join(' > '));
         }
 
-        var publicationList = app.getPublicationList(WhatTheDuck.app.userCollection.issues, country.shortName, isUserCollection);
+        var publicationList = app.getPublicationList(WhatTheDuck.app.userCollection.issues, currentCountry.shortName, isUserCollection);
         renderList('publications', publicationList, isUserCollection);
     }
 
@@ -189,18 +195,18 @@ WhatTheDuck.controller = (function ($, app) {
 
 		var parameters = queryStringToObject(data.options.target);
 
-		var publication = CoaListing.getPublication(parameters.publicationShortName.replace(/\./,'/'));
-		var country = CoaListing.getCountry(publication.shortName.split('/')[0]);
+		currentPublication = CoaListing.getPublication(parameters.publicationShortName.replace(/\./,'/'));
+		currentCountry = CoaListing.getCountry(currentPublication.shortName.split('/')[0]);
 
 		var header = $(selectors.issues.header);
 		if (isUserCollection) {
-			header.text([i18n.t('my_collection'), country.fullName, publication.fullName].join(' > '));
+			header.text([i18n.t('my_collection'), currentCountry.fullName, currentPublication.fullName].join(' > '));
 		}
 		else {
-			header.text([i18n.t('insert_issue_menu'), country.fullName, publication.fullName].join(' > '));
+			header.text([i18n.t('insert_issue_menu'), currentCountry.fullName, currentPublication.fullName].join(' > '));
 		}
 
-		var issueList = app.getIssueList(WhatTheDuck.app.userCollection.issues, country.shortName, publication.shortName, isUserCollection);
+		var issueList = app.getIssueList(WhatTheDuck.app.userCollection.issues, currentCountry.shortName, currentPublication.shortName, isUserCollection);
 		renderList('issues', issueList, isUserCollection);
 	}
 

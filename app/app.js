@@ -40,28 +40,39 @@ WhatTheDuck.app = (function ($) {
             + publication.fullName;
     }
 
-	function getIssueLabel(issue, isUserCollection) {
-		return (!isUserCollection && WhatTheDuck.app.userCollection.hasIssue(publication.shortName)
+	function getIssueLabel(currentPublication, issue, isUserCollection) {
+		return (!isUserCollection && WhatTheDuck.app.userCollection.getIssue(currentPublication.shortName, issue.issueNumber)
 			? '* '
 			: '')
 			+ issue.issueNumber;
 	}
 
-    function getCountryList(issues, isUserCollection) {
+	function getIssueConditionClass(currentPublication, issue) {
+		return WhatTheDuck.app.userCollection.getIssue(currentPublication.shortName, issue.issueNumber)
+			? ($.map(WhatTheDuck.Issue.IssueCondition, function(dbLabel, cssClassName) {
+				if (dbLabel === issue.issueCondition) {
+					return cssClassName;
+				}
+				return undefined;
+			  })[0].toLowerCase())
+			: 'no_condition';
+	}
+
+    function getCountryList(issues) {
         return $.map(issues, function(publications, shortName) {
             return CoaListing.getCountry(shortName);
         })
             .sort(WhatTheDuck.Collection.FullNamesComparator);
     }
 
-    function getPublicationList(issues, country, isUserCollection) {
+    function getPublicationList(issues, country) {
         return $.map(issues[country], function(element,shortName) {
             return CoaListing.getPublication(shortName);
         })
             .sort(WhatTheDuck.Collection.FullNamesComparator);
     }
 
-	function getIssueList(issues, country, publication, isUserCollection) {
+	function getIssueList(issues, country, publication) {
 		return issues[country][publication]
 			.sort(WhatTheDuck.Collection.IssueComparator);
 	}
@@ -139,6 +150,7 @@ WhatTheDuck.app = (function ($) {
         getCountryLabel: getCountryLabel,
         getPublicationLabel: getPublicationLabel,
 	    getIssueLabel: getIssueLabel,
+	    getIssueConditionClass: getIssueConditionClass,
         getCountryList: getCountryList,
         getPublicationList: getPublicationList,
 	    getIssueList: getIssueList,

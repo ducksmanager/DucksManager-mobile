@@ -52,6 +52,7 @@ WhatTheDuck.Collection = function() {
 					issueFound = this;
 					return false;
 				}
+				return true;
 			});
 		}
 		return issueFound;
